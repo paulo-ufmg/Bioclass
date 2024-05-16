@@ -20,14 +20,15 @@ class Bioprof:
     """
     
     def __init__(self):
-       self.__version__ = "0.01"
+       self.__version__ = "0.02"
+       self.id = "" #string que contém o nome(identificação da sequencia)
        self.ids = [] #Lista de id's das sequências referenciadas pelo index da lista
        self.info ={} #Dicionario que armazena um comentario da sequência
-       self.nucleotideo = {"A":0,"C":0,"G":0,"T":0,"U":0} #nucleotideos presente na sequencia
-       self.nucleotideos = [] #Lista de aminoácido {"C":0,"G":0,"T":0,"U":0}
+       self.composicao_DNA_RNA_PROTEINA = {} #nucleotideos ou aminoácidos presente na sequencia DNA-RNA ou de Proteina
+       #self.nucleotideo = {} #nucleotideos ou aminoácidos presente na sequencia DNA-RNA ou de Proteina
+       self.composicao_total = [] #Totalização de nucleotídeos na sequencia  {"C":0,"G":0,"T":0,"U":0}
+       self.sequencia = [] # Lista de string contendo a sequencia de DNA,RNA ou Proteina
        self.alerta = True
-       
-       
 
     def message_view(self,mensagem,interrupt=False):
         """Exibir mensagem de alerta"""
@@ -43,56 +44,91 @@ class Bioprof:
         """Retorna a lista de sequencias registradas"""
         return  self.ids
         
-    def soma_nucleotideos(self,indice):
-        """Soma a quantidade nucleotideos de uma sequencia"""
-        total = 0
-        if((len(self.nucleotideos) < indice) or not isinstance(indice, int)): 
+    def tamanho_sequencia(self,indice):
+        """Soma a quantidade nucleotideos ou aminoácidos de uma sequencia"""
+        tamanho = 0
+        if((len(self.composicao_total) < indice) or not isinstance(indice, int)): 
             self.message_view("Sequencia não encontrada!")
             return 0
-        for n in self.nucleotideos[indice]:
-            total += self.nucleotideos[indice][n]
-        return total    
+        for n in self.composicao_total[indice]:
+            tamanho += self.composicao_total[indice][n]
+        return tamanho
 
-    def new_seq(self,id):
+    def nova_sequencia(self,id):
+       """Insere uma nova sequencia na lista ids"""
        if not(self.seq_existe(id)):
           self.ids.append(id)
-          self.nucleotideos.append(dict(self.nucleotideo)) #Expressão dict faz uma copia do dicionario nucleotideo
+          self.composicao_total.append(dict(self.composicao_DNA_RNA_PROTEINA)) #Expressão dict faz uma copia do dicionario
+          self.sequencia.append("") #Inicializa uma string na lista para aramazenar a sequencia
+          return True 
        else:
           self.message_view("Sequencia já inserida!")   
+          return False
+       
+    def get_sequencia(self,id):
+        """ Retorna a sequencia armazenada com seus nucleotídeos (DNA e RNA) ou dos aminoácidos (Proteina)"""
+        return self.sequencia[ self.ids.index(id) ]  if (self.seq_existe(id)) else None
+    
+    def get_composicao_seq(self,id):
+        """ Retorna a composição da sequência com os totais de nucleotídeos (DNA e RNA) ou dos aminoácidos (Proteina) """
+        if (self.seq_existe(id)):
+            temp = f"T({self.tamanho_sequencia(self.ids.index(id))}): "
+            for chave, valor in self.composicao_total[ self.ids.index(id) ].items():
+                temp +=  chave +'('+str(valor)+')'+','
+            return temp
+        self.message_view("Sequencia não encontrada!")   
+
+    def get_tipo_seq(self,id):
+        """Identifica uma sequencia se é de DNA, RNA ou PROTEINA"""
+        seq = self.get_sequencia(id)
+        if(seq.find("U") != -1):  
+            return "RNA"
+        return "DNA" if(len(re.findall(r'[^ACGT]', seq)) == 0) else "Proteina" #Se sequencia contém somente ACGT é um DNA
+
 
     def insert_comment(self,id,info):
+       """Armazena o comentário da sequência"""
        if (self.seq_existe(id) and info is not None):
             self.info[self.ids.index(id)] = info
      
-    def add_nucleotideo(self,id,tipo):
-        """Adciona um somatório de nucleotídos da sequência"""
-        if(re.sub(r'[\t\n\r\f\v\b\0\a\s]', '',tipo)==""):
+    def add_item(self,id,item):
+        """Adciona um somatório de nucleotídos ou aminoácidos da sequência"""
+        if(re.sub(r'[\t\n\r\f\v\b\0\a\s]', '',item)==""):
             return 
         if(self.seq_existe(id)): 
-            if("ACGTU".find(tipo) != -1):
-               self.nucleotideos[ self.ids.index(id) ][tipo] += 1
+            if("ACGTUDEFHIKLMNPQRSVWY".find(item) != -1): #ACGTU (Nucleotídeos presentes no DNA ou RNA) | ACDEFGHIKLMNPQRSTVWY (Aminoácidos presentes na Proteina)
+                indice = self.ids.index(id)
+                if(item in self.composicao_total[ indice ]):
+                    self.composicao_total[ indice ][item] += 1
+                else:
+                    self.composicao_total[ indice ][item] = 1    
+                self.sequencia[ indice ] += item    
             else:
-               self.message_view(f"Nucleotídeo não reconhecido na sequencia[{id}]!{tipo}",True)
+               self.message_view(f"Um nucleotídeo ou aminoácido não reconhecido na sequencia[{id}]!{item}",True)
         else:
             self.message_view(f"-Identificação de sequência não encontrada!{id}")
                     
-    def get_info_seq(self,id):
+    def ver_info_seq(self,id):
+        """Exibe dados de uma sequência"""
         if(self.seq_existe(id)):
             indice = self.ids.index(id)
             print("Informações da sequência:")
             print("=========================")
             print(f"Id: {self.ids[indice]}")
+            print(f"Sequencia de {self.get_tipo_seq(id)}")
             if(indice in self.info ):
                 print(f"Info: {self.info[indice]}")
-            #print(self.nucleotideos)   
-            print(f"Q(n): A({self.nucleotideos[indice]['A']}),C({self.nucleotideos[indice]['C']}),G({self.nucleotideos[indice]['G']}),T({self.nucleotideos[indice]['T']}),U({self.nucleotideos[indice]['U']})")
-            print(f"Total: {self.soma_nucleotideos(indice)}")
-            GC = (self.nucleotideos[indice]['G']+self.nucleotideos[indice]['C'])/self.soma_nucleotideos(indice)
-            print("GC: {:.2f} %".format(GC*100))
-            
-            
+            print(f"Composição: {self.get_composicao_seq(id)}")
+                #print(f"Q(n): A({self.composicao_total[indice]['A']}),C({self.composicao_total[indice]['C']}),G({self.composicao_total[indice]['G']}),T({self.composicao_total[indice]['T']}),U({self.composicao_total[indice]['U']})")
+            print(f"Tamanho sequencia: {self.tamanho_sequencia(indice)}")
+            if(("G" in self.composicao_total[indice])and("C" in self.composicao_total[indice])):
+                GC = (self.composicao_total[indice]['G']+self.composicao_total[indice]['C'])/self.tamanho_sequencia(indice)
+                print("GC: {:.2f} %".format(GC*100))
+        else:
+            self.message_view("Sequencia não encontrada!")   
        
     def identifica_id(self,line):
+        """Retorna a string de identificação da sequência (id)"""
         match = re.match(r'^>(\S+)', line)
         if match:
             return match.group(1)
@@ -100,6 +136,7 @@ class Bioprof:
             return None
 
     def identifica_info(self,line):
+        """Retorna a string de comentário da sequência (id)"""
         match = re.match(r'^>[\w\|]+ (.+)', line)
         if match:
             return match.group(1)
@@ -117,10 +154,13 @@ class Bioprof:
                     continue
                 if(self.line.find('>') >= 0): #Identificado nova sequencia
                     self.id = self.identifica_id(self.line)
-                    self.new_seq(self.id)
-                    comment = self.identifica_info(self.line)
-                    self.insert_comment(self.id,comment)
+                    if(self.nova_sequencia(self.id)):
+                        comment = self.identifica_info(self.line)
+                        self.insert_comment(self.id,comment)
+                    else: self.id = None    
                 else:    #compilando a sequencia
-                    for i in [*self.line]:
-                        self.add_nucleotideo(self.id,i)    
-#===============================================================
+                    if(self.id != None):
+                        for i in [*self.line]:
+                            self.add_item(self.id,i)    
+
+
