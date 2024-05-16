@@ -20,7 +20,7 @@ class Bioprof:
     """
     
     def __init__(self):
-       self.__version__ = "0.01"
+       self.__version__ = "0.02"
        self.id = "" #string que contém o nome(identificação da sequencia)
        self.ids = [] #Lista de id's das sequências referenciadas pelo index da lista
        self.info ={} #Dicionario que armazena um comentario da sequência
