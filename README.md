@@ -1,3 +1,4 @@
+![Bioclass logo](dados/logo.png)
 Classe em Python para trabalhar Biosequencias
 
 Trabalho da disciplina de Ambientes de Computação da PPGCC-UFMG
