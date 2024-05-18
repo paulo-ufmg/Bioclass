@@ -7,7 +7,15 @@ arquivo = 'dados' + os.sep + 'L02E05_file_fasta.txt'
 arquivo2 = 'dados' + os.sep + 'sequencias_spike.fasta.txt'
 
 seq = Bioprof() #Instanciando o objeto da nossa classe
+seq.add_seq("1","Primeira sequencia","CATCGTAATGACGGCCT")
+seq.add_seq("2", "Segunda sequencia","CATCGTAATGACGGCCT")
+print(seq.get_seqs())
+for i in seq.get_seqs():
+    seq.ver_info_seq(i)
 
+#seq.add_seq("1","Primeira sequencia","GAGCCTACTAACGGGAT")
+#seq.add_seq("2","Segunda sequencia","CATCGTAATGACGGCCT")
+exit()
 seq.leiaArquivoFasta(arquivo) #Método que carrega as sequências e dados complementares
 seq.leiaArquivoFasta(arquivo2) #Método que carrega as sequências e dados complementares
 

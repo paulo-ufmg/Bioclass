@@ -164,3 +164,12 @@ class Bioprof:
                             self.add_item(self.id,i)    
 
 
+    def add_seq(self,n1,n2,n3):
+        """Insere uma sequência através de código"""
+        if(self.nova_sequencia(n1)):
+            self.insert_comment(n1,n2)
+            for n in n3:
+                self.add_item(n1,n) 
+        else:
+            self.message_view("Erro ao adicionar ou sequência já inserida!")   
+
