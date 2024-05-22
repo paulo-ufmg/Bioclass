@@ -4,6 +4,7 @@
 # pós graduação da Ciência da Computação da  UFMG
 import re
 import os
+import blosum as bl
 
 class Bioprof:
     """Bioprof - Trabalho da disciplina de Ambientes de Computação DCC-PPGCC.UFMG(2024)
@@ -29,6 +30,14 @@ class Bioprof:
        self.composicao_total = [] #Totalização de nucleotídeos na sequencia  {"C":0,"G":0,"T":0,"U":0}
        self.sequencia = [] # Lista de string contendo a sequencia de DNA,RNA ou Proteina
        self.alerta = True
+       self.codons = {
+            "UUU": "F", "UUC": "F", "UUA": "L", "UUG": "L","CUU": "L", "CUC": "L", "CUA": "L", "CUG": "L","AUU": "I", "AUC": "I", "AUA": "I", "AUG": "M","GUU": "V",
+            "GUC": "V", "GUA": "V", "GUG": "V","UCU": "S", "UCC": "S", "UCA": "S", "UCG": "S","CCU": "P", "CCC": "P", "CCA": "P", "CCG": "P","ACU": "T", "ACC": "T",
+            "ACA": "T", "ACG": "T","GCU": "A", "GCC": "A", "GCA": "A", "GCG": "A","UAU": "Y", "UAC": "Y", "UAA": "*", "UAG": "*","CAU": "H", "CAC": "H", "CAA": "Q",
+            "CAG": "Q","AAU": "N", "AAC": "N", "AAA": "K", "AAG": "K","GAU": "D", "GAC": "D", "GAA": "E", "GAG": "E","UGU": "C", "UGC": "C", "UGA": "*", "UGG": "W",
+            "CGU": "R", "CGC": "R", "CGA": "R", "CGG": "R","AGU": "S", "AGC": "S", "AGA": "R", "AGG": "R","GGU": "G", "GGC": "G", "GGA": "G", "GGG": "G"           
+        }
+       self.blosum_matrix = bl.BLOSUM(62) # Define a matriz blosum dentro da classe  
 
     def message_view(self,mensagem,interrupt=False):
         """Exibir mensagem de alerta"""
@@ -36,16 +45,26 @@ class Bioprof:
         if(interrupt): exit()        
         
 
-    def seq_existe (self,id):
-       """Retorna verdadeiro se a sequencia identificada por id está registrada"""
-       return True if(id in self.ids) else False 
+    def seq_existe (self,arg):
+       """Retorna verdadeiro se a sequencia identificada em argumento está registrada"""
+       if(isinstance(arg, int)): return True if 0 <= arg < len(self.ids) else False #procura por um indice presente na Lista de identificação de sequencias (ids)
+       else: return True if(arg in self.ids) else False  #procura pela identificação da sequencia na Lista de identificação de sequencias (ids)
     
     def get_seqs(self):
         """Retorna a lista de sequencias registradas"""
         return  self.ids
+    
+    def get_info(self,id_ou_indice):
+        """Retorna comentário da sequencia"""
+        indice = id_ou_indice if (isinstance(id_ou_indice, int)) else self.ids.index(id_ou_indice)
+        if indice in self.info:
+            return self.info[indice]
+        else: self.message_view("Sequencia não possui comentário!")   
         
-    def tamanho_sequencia(self,indice):
+        
+    def get_tamanho_sequencia(self,id_ou_indice): #permite receber como paramentro um inteiro que é o indice ou uma string id que é a identificação da sequencia
         """Soma a quantidade nucleotideos ou aminoácidos de uma sequencia"""
+        indice = id_ou_indice if (isinstance(id_ou_indice, int)) else self.ids.index(id_ou_indice)
         tamanho = 0
         if((len(self.composicao_total) < indice) or not isinstance(indice, int)): 
             self.message_view("Sequencia não encontrada!")
@@ -72,7 +91,7 @@ class Bioprof:
     def get_composicao_seq(self,id):
         """ Retorna a composição da sequência com os totais de nucleotídeos (DNA e RNA) ou dos aminoácidos (Proteina) """
         if (self.seq_existe(id)):
-            temp = f"T({self.tamanho_sequencia(self.ids.index(id))}): "
+            temp = f"T({self.get_tamanho_sequencia(self.ids.index(id))}): "
             for chave, valor in self.composicao_total[ self.ids.index(id) ].items():
                 temp +=  chave +'('+str(valor)+')'+','
             return temp
@@ -84,6 +103,18 @@ class Bioprof:
         if(seq.find("U") != -1):  
             return "RNA"
         return "DNA" if(len(re.findall(r'[^ACGT]', seq)) == 0) else "Proteina" #Se sequencia contém somente ACGT é um DNA
+    
+    def get_percentual_GC(self,arg):
+        """Retorna a percentual(%) de Guanina e Citosina na sequência."""
+        if (self.seq_existe(arg)):
+            indice = arg if isinstance(arg, int) else self.ids.index(arg) 
+            G = self.composicao_total[indice]['G'] if('G' in self.composicao_total[indice]) else 0
+            C = self.composicao_total[indice]['C'] if('C' in self.composicao_total[indice]) else 0
+            GC = ( G + C ) / self.get_tamanho_sequencia(indice) if(self.get_tamanho_sequencia(indice) > 0) else 0
+            return GC*100
+        self.message_view("Sequencia não encontrada!")
+        return None
+
 
 
     def insert_comment(self,id,info):
@@ -120,10 +151,14 @@ class Bioprof:
                 print(f"Info: {self.info[indice]}")
             print(f"Composição: {self.get_composicao_seq(id)}")
                 #print(f"Q(n): A({self.composicao_total[indice]['A']}),C({self.composicao_total[indice]['C']}),G({self.composicao_total[indice]['G']}),T({self.composicao_total[indice]['T']}),U({self.composicao_total[indice]['U']})")
-            print(f"Tamanho sequencia: {self.tamanho_sequencia(indice)}")
-            if(("G" in self.composicao_total[indice])and("C" in self.composicao_total[indice])):
-                GC = (self.composicao_total[indice]['G']+self.composicao_total[indice]['C'])/self.tamanho_sequencia(indice)
-                print("GC: {:.2f} %".format(GC*100))
+            print(f"Tamanho sequencia: {self.get_tamanho_sequencia(indice)}")
+            print("Percentual de GC: {:.2f} %".format(self.get_percentual_GC(indice)))
+            
+            #if(("G" in self.composicao_total[indice])and("C" in self.composicao_total[indice])):
+            #    GC = (self.composicao_total[indice]['G']+self.composicao_total[indice]['C'])/self.get_tamanho_sequencia(indice)
+            #    print("GC: {:.2f} %".format(GC*100))
+
+
         else:
             self.message_view("Sequencia não encontrada!")   
        
@@ -145,13 +180,13 @@ class Bioprof:
         
     def leiaArquivoFasta(self,nome_arquivo):
         """ Lê  todas as sequências de um arquivo Fasta """    
-        with open (nome_arquivo) as arq:
+        with open (nome_arquivo, "r") as arq:
             while True:
                 self.line = arq.readline()
-                if not self.line:
-                    break
-                if self.line.strip()[0]==";":
-                    continue
+                if not self.line: break #interrompe ao final do arquivo
+                if self.line.strip() == "": continue  # Ignorar linhas em branco
+                if self.line.strip()[0]==";": continue # ignora linhas de comentário
+
                 if(self.line.find('>') >= 0): #Identificado nova sequencia
                     self.id = self.identifica_id(self.line)
                     if(self.nova_sequencia(self.id)):
@@ -163,4 +198,196 @@ class Bioprof:
                         for i in [*self.line]:
                             self.add_item(self.id,i)    
 
+    def add_seq(self,n1,n2,n3):
+        """Insere uma sequência através de código"""
+        if(self.nova_sequencia(n1)):
+            self.insert_comment(n1,n2)
+            for n in n3:
+                self.add_item(n1,n) 
+        else:
+            self.message_view("Erro ao adicionar ou sequência já inserida!")   
+
+    # Calcula a distância de Hamming (dH) entre duas sequências
+    def dH(self,id1,id2):
+        """Distãncia de Hamming (dH) entre duas sequências de DNA ou RNA"""
+        if(self.seq_existe(id1) and self.seq_existe(id2)):
+            if([self.get_tipo_seq(id1),self.get_tipo_seq(id2)] == ['DNA','DNA'] or [self.get_tipo_seq(id1),self.get_tipo_seq(id2)] == ['RNA','RNA']):
+                if(self.get_tamanho_sequencia(id1)==self.get_tamanho_sequencia(id2)):
+                    seq1 = self.get_sequencia(id1)
+                    seq2 = self.get_sequencia(id2)
+                    dist =0 
+                    for n1, n2 in zip(seq1, seq2):
+                        if(n1 != n2):
+                            dist += 1
+                    return dist       
+                else: self.message_view("As sequências têm comprimentos diferentes.")       
+            else: self.message_view("Para calcular a distância de hamming as sequências devem ser de DNA ou de RNA.")       
+        else: self.message_view("Identificação das sequências não encontrada!")       
+        return False
+    
+    def rna2proteina(self,id):
+        proteina = []
+        if(self.seq_existe(id)):
+            if(self.get_tipo_seq(id) == "RNA"):
+                mRNA = self.get_sequencia(id)
+                for i in range(0, len(mRNA), 3):
+                    codon = mRNA[i:i+3]  # Extrai o códon de 3 nucleotídeos
+                    aminoacido = self.codons.get(codon, 'X')  # Obtém o aminoácido correspondente ao códon
+                    proteina.append(aminoacido)  # Adiciona o aminoácido à lista
+                # Junta os aminoácidos em uma única string
+                return ''.join(proteina) 
+            else: self.message_view("Sequência para transcrição não é um RNA!")              
+        else: self.message_view("Identificação das sequências não encontrada!")              
+        return None
+    
+    def transc_dna2rna(self,id):
+        """Transcrição de uma sequência de DNA em um mRNA -Substitui todas as ocorrências de 'T' por 'U' """
+        if(self.seq_existe(id)):
+            if(self.get_tipo_seq(id) == "DNA"):
+                DNA = self.get_sequencia(id)
+                mRNA =  DNA.replace('T', 'U')
+                return mRNA
+            else: self.message_view("Sequência para transcrição não é um DNA!")              
+        else: self.message_view("Identificação das sequências não encontrada!")              
+        return None
+
+
+    def get_kmers(self,id,k):
+        """Retorna uma lista de sequencias k da janela deslizante da sequência
+        :param sequencia: A sequência de entrada (string)
+        :param k: O comprimento dos k-mers (inteiro)
+        :return: Uma lista de k-mers
+        """
+        if(self.seq_existe(id)):
+            if(k <= self.get_tamanho_sequencia(id)):
+                sequencia = self.get_sequencia(id)
+                kmers = []
+                for i in range(len(sequencia) - k + 1):
+                    kmers.append(sequencia[i:i + k])
+                return kmers
+            else: self.message_view("Comprimento k (k-mers) maior que a sequência!")                  
+        else: self.message_view("Identificação das sequências não encontrada!")  
+        return None                
+    
+    def get_assembly_kmers(self):
+        """Assembly, monta um genoma a partir dos kmers (conjunto de todas as sequencias do objeto)"""
+        if(len(self.ids) > 1):
+            genoma = ""
+            for i in range(len(self.ids)-1):
+                genoma += self.sequencia[i][0]
+            genoma += self.sequencia[len(self.ids)-1]
+            return genoma
+        if (len(self.ids) == 1): return self.ids[0]
+        else: self.message_view("Não existe Mers suficientes para construir uma estrutura de sequência!")                  
+        return None
+    
+    #--------------------------------------------------------------------------    
+
+    #def matriz_d(self, filename):
+    def matriz_d(self):
+        import numpy as np
+        import blosum as bl
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+        import scipy.cluster.hierarchy as sch
+        #sequences = self.get_fasta_sequences(filename)
+        #num_sequences = len(sequences)
+        num_sequences = len(self.ids)
+
+        # Inicializar matriz de distância
+        distance_matrix = np.zeros((num_sequences, num_sequences))
+
+        # Execute alinhamentos aos pares e preencha a matriz de distância
+        #for i, (name1, seq1) in enumerate(sequences.items()):
+        for i, seq1 in enumerate(self.ids):
+            #for j, (name2, seq2) in enumerate(sequences.items()):
+            for j, seq2 in enumerate(self.ids):
+                if self.ids[i] != self.ids[j]: #se as identificações das sequencias são iguais
+                    #rx_indices, ry_indices, rx_alignment, ry_alignment, scoring_matrix, num_gaps = self.needleman_wunsch_2(seq1, seq2)
+                    rx_indices, ry_indices, rx_alignment, ry_alignment, scoring_matrix, num_gaps = self.needleman_wunsch_2(self.sequencia[i], self.sequencia[j])
+                    distance_matrix[i,j] = -scoring_matrix[-1,-1]  # Executar alinhamentos aos pares e preencher a matriz de distância
+                    
+                    # Optional: Imprimir alinhamentos
+                    #print(f"Alignment between {name1} and {name2}:")
+                    print(f"Alignment between {self.ids[i]} and {self.ids[j]}:")
+                    print(rx_alignment)
+                    #print(ry_alignment)
+                    #plot_scoring_matrix(scoring_matrix, rx_indices, ry_indices)  # Optional: Individual plots
+
+        # Execute clustering hierárquico e crie mapa de calor
+        linkage_matrix = sch.linkage(distance_matrix, method='ward')
+        # Execute clustering hierárquico e crie mapa de calor
+        clustermap = sns.clustermap(distance_matrix, cmap='coolwarm', row_linkage=linkage_matrix, col_linkage=linkage_matrix)
+        plt.show()  # Mostre o enredo
+
+    def needleman_wunsch_2(self, x, y, gap=1):
+        import numpy as np
+        import blosum as bl
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+        import scipy.cluster.hierarchy as sch
+        scoring_matrix = self.calculate_scoring_matrix_2(x, y, gap)
+        rx_indices, ry_indices, num_gaps = self.traceback_2(scoring_matrix, x, y,gap)
+
+        rx_alignment = ''.join([x[i - 1] if i > 0 else '-' for i in rx_indices])
+        ry_alignment = ''.join([y[j - 1] if j > 0 else '-' for j in ry_indices])
+
+        return rx_indices, ry_indices, rx_alignment, ry_alignment, scoring_matrix, num_gaps
+
+    def traceback_2(self, scoring_matrix, x, y, gap=-5):  # PENALIDADE DE GAPS
+        import numpy as np
+        import blosum as bl
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+        import scipy.cluster.hierarchy as sch
+        i, j = len(x), len(y)
+        rx, ry = [], []
+        gap_count = 0
+        while i > 0 or j > 0:
+            amino_acid_x = x[i - 1]
+            amino_acid_y = y[j - 1]
+            if i > 0 and j > 0 and scoring_matrix[i, j] == scoring_matrix[i - 1, j - 1] + (self.blosum_matrix[amino_acid_x][amino_acid_y]): # Use self.blosum_matrix
+                rx.append(i)
+                ry.append(j)
+                i -= 1
+                j -= 1
+            elif i > 0 and scoring_matrix[i, j] == scoring_matrix[i - 1, j] - gap:
+                rx.append(i)
+                ry.append(0) 
+                i -= 1
+                gap_count += 1
+            else:
+                rx.append(0)
+                ry.append(j)
+                j -= 1
+                gap_count += 1
+
+        return rx[::-1], ry[::-1], gap_count
+
+    def calculate_scoring_matrix_2(self, x, y, gap=1):
+        import numpy as np
+        import blosum as bl
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+        import scipy.cluster.hierarchy as sch
+        nx = len(x)
+        ny = len(y)
+
+        scoring_matrix = np.zeros((nx + 1, ny + 1))
+
+        scoring_matrix[:, 0] = np.linspace(0, -nx * gap, nx + 1)
+        scoring_matrix[0, :] = np.linspace(0, -ny * gap, ny + 1)
+
+        for i in range(1, nx + 1):
+            for j in range(1, ny + 1):
+              amino_acid_x = x[i - 1]
+              amino_acid_y = y[j - 1]
+              if x[i - 1] == y[j - 1]:
+                  scoring_matrix[i, j] = scoring_matrix[i - 1, j - 1] + self.blosum_matrix[amino_acid_x][amino_acid_y] # Use self.blosum_matrix
+              else:
+                  scoring_matrix[i, j] = max(scoring_matrix[i - 1, j] - gap,
+                                              scoring_matrix[i, j - 1] - gap,
+                                              scoring_matrix[i - 1, j - 1] + self.blosum_matrix[amino_acid_x][amino_acid_y]) # Use self.blosum_matrix
+
+        return scoring_matrix
 
