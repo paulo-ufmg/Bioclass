@@ -17,3 +17,5 @@ env/
 # Ignorar arquivos de configurações do editor
 *.vscode/
 .idea/
+
+entrada.py

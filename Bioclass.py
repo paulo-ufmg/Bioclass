@@ -2,9 +2,9 @@
 #
 # Este arquivo faz parte do trabalho da disciplina de Ambintes de Computação do dpto de 
 # pós graduação da Ciência da Computação da  UFMG
+import importlib.util
 import re
-import os
-import blosum as bl
+import sys
 
 class Bioprof:
     """Bioprof - Trabalho da disciplina de Ambientes de Computação DCC-PPGCC.UFMG(2024)
@@ -21,7 +21,7 @@ class Bioprof:
     """
     
     def __init__(self):
-       self.__version__ = "0.04"
+       self.__version__ = "0.05"
        self.id = "" #string que contém o nome(identificação da sequencia)
        self.ids = [] #Lista de id's das sequências referenciadas pelo index da lista
        self.info ={} #Dicionario que armazena um comentario da sequência
@@ -37,7 +37,13 @@ class Bioprof:
             "CAG": "Q","AAU": "N", "AAC": "N", "AAA": "K", "AAG": "K","GAU": "D", "GAC": "D", "GAA": "E", "GAG": "E","UGU": "C", "UGC": "C", "UGA": "*", "UGG": "W",
             "CGU": "R", "CGC": "R", "CGA": "R", "CGG": "R","AGU": "S", "AGC": "S", "AGA": "R", "AGG": "R","GGU": "G", "GGC": "G", "GGA": "G", "GGG": "G"           
         }
-       self.blosum_matrix = bl.BLOSUM(62) # Define a matriz blosum dentro da classe  
+
+    def verificar_biblioteca(self,biblioteca):
+        if importlib.util.find_spec(biblioteca) is None:
+            print(f"A biblioteca '{biblioteca}' não está instalada.")
+            print(f"Por favor, instale-a usando: pip install {biblioteca}")
+            return False
+        return True
 
     def message_view(self,mensagem,interrupt=False):
         """Exibir mensagem de alerta"""
@@ -299,11 +305,20 @@ class Bioprof:
 
     #def matriz_d(self, filename):
     def matriz_d(self):
+        """ """
+        bibliotecas = ['numpy', 'blosum','matplotlib.pyplot','seaborn','scipy.cluster.hierarchy'] # Lista de bibliotecas necessárias
+        for biblioteca in bibliotecas: # Verificar cada biblioteca
+            if not self.verificar_biblioteca(biblioteca):
+                sys.exit(1)  # Sair do script se alguma biblioteca não estiver instalada
+
         import numpy as np
         import blosum as bl
         import matplotlib.pyplot as plt
         import seaborn as sns
         import scipy.cluster.hierarchy as sch
+
+        self.blosum_matrix = bl.BLOSUM(62) # Define um atributo de instância
+
         #sequences = self.get_fasta_sequences(filename)
         #num_sequences = len(sequences)
         num_sequences = len(self.ids)
@@ -335,6 +350,10 @@ class Bioprof:
         plt.show()  # Mostre o enredo
 
     def needleman_wunsch_2(self, x, y, gap=1):
+        bibliotecas = ['numpy', 'blosum','matplotlib.pyplot','seaborn','scipy.cluster.hierarchy'] # Lista de bibliotecas necessárias
+        for biblioteca in bibliotecas: # Verificar cada biblioteca
+            if not self.verificar_biblioteca(biblioteca):
+                sys.exit(1)  # Sair do script se alguma biblioteca não estiver instalada
         import numpy as np
         import blosum as bl
         import matplotlib.pyplot as plt
@@ -354,12 +373,16 @@ class Bioprof:
         import matplotlib.pyplot as plt
         import seaborn as sns
         import scipy.cluster.hierarchy as sch
+        
+
         i, j = len(x), len(y)
         rx, ry = [], []
         gap_count = 0
         while i > 0 or j > 0:
             amino_acid_x = x[i - 1]
             amino_acid_y = y[j - 1]
+           
+            
             if i > 0 and j > 0 and scoring_matrix[i, j] == scoring_matrix[i - 1, j - 1] + (self.blosum_matrix[amino_acid_x][amino_acid_y]): # Use self.blosum_matrix
                 rx.append(i)
                 ry.append(j)
@@ -384,6 +407,7 @@ class Bioprof:
         import matplotlib.pyplot as plt
         import seaborn as sns
         import scipy.cluster.hierarchy as sch
+
         nx = len(x)
         ny = len(y)
 
@@ -391,11 +415,12 @@ class Bioprof:
 
         scoring_matrix[:, 0] = np.linspace(0, -nx * gap, nx + 1)
         scoring_matrix[0, :] = np.linspace(0, -ny * gap, ny + 1)
-
+        
         for i in range(1, nx + 1):
             for j in range(1, ny + 1):
               amino_acid_x = x[i - 1]
               amino_acid_y = y[j - 1]
+
               if x[i - 1] == y[j - 1]:
                   scoring_matrix[i, j] = scoring_matrix[i - 1, j - 1] + self.blosum_matrix[amino_acid_x][amino_acid_y] # Use self.blosum_matrix
               else:
@@ -404,6 +429,27 @@ class Bioprof:
                                               scoring_matrix[i - 1, j - 1] + self.blosum_matrix[amino_acid_x][amino_acid_y]) # Use self.blosum_matrix
 
         return scoring_matrix
+
+    
+    def compara_genomas(self,id1,id2):
+        """Compara dois genomas e retorna a porcentagem de diferenças"""
+        if(self.seq_existe(id1) and self.seq_existe(id2)):
+            if([self.get_tipo_seq(id1),self.get_tipo_seq(id2)] == ['DNA','DNA']):
+                if(self.get_tamanho_sequencia(id1)==self.get_tamanho_sequencia(id2)):
+                    genoma1 = self.get_sequencia(id1)
+                    genoma2 = self.get_sequencia(id2)
+                    print(id1," : ", self.get_sequencia(id1) )
+                    print(id2," : ", self.get_sequencia(id1) )
+                    Num_Dif = 0
+                    for i in range(len(genoma1)):
+                        if genoma1[i] != genoma2[i]:
+                            Num_Dif += 1
+                    Dif_Percentual = (Num_Dif / len(genoma1)) * 100
+                    return "{:.2f}%".format(Dif_Percentual)      
+                else: self.message_view("As sequências têm comprimentos diferentes.")       
+            else: self.message_view("Para comparar os genomas as sequências devem ser de DNA.")       
+        else: self.message_view("Identificação das sequências não encontrada!")       
+        return False
 
 class encadear(Bioprof):
 

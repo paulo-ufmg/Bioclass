@@ -8,9 +8,12 @@ seq1.leiaArquivoFasta('dados' + os.sep + 'teste.fasta')
 seq1.adiciona_seq("Genoma","teste","CCACCCTCGTGGTATGGCTAGGCATTCAGGAACCGGAGAACGCTTCAGACCAGCCCGGACTGGGAACCTGCGGGCAGTAGGTGGAAT")
 print(seq1.get_seqs())
 seq1.insert_comment("Genoma","Alterei o comentário!")
+print(seq1.compara_genomas("Genoma1","Genoma2"))
+exit()
 print(seq1.get_seqs())
 print(seq1.ids)
 print(seq1.get_info(2))
+
 
 for seq,seque in enumerate(seq1.get_seqs()):
     print("Sequencia: ",seq,"   Tamanho: ",seq1.get_tamanho_sequencia(seq)," Tipo: ",seq1.get_tipo_seq(seq), " Percentual GC: ","{:.2f} %".format(seq1.get_percentual_GC(seq)))
