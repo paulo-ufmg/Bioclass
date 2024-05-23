@@ -21,7 +21,7 @@ class Bioprof:
     """
     
     def __init__(self):
-       self.__version__ = "0.02"
+       self.__version__ = "0.04"
        self.id = "" #string que contém o nome(identificação da sequencia)
        self.ids = [] #Lista de id's das sequências referenciadas pelo index da lista
        self.info ={} #Dicionario que armazena um comentario da sequência
@@ -54,26 +54,26 @@ class Bioprof:
         """Retorna a lista de sequencias registradas"""
         return  self.ids
     
-    def get_info(self,id_ou_indice):
+    def get_info(self,arg):
         """Retorna comentário da sequencia"""
-        indice = id_ou_indice if (isinstance(id_ou_indice, int)) else self.ids.index(id_ou_indice)
-        if indice in self.info:
-            return self.info[indice]
+        busca = self.ids[arg] if (isinstance(arg, int)) else arg #busca irá manter o id
+        if busca in self.info:
+            return self.info[busca]
         else: self.message_view("Sequencia não possui comentário!")   
         
         
-    def get_tamanho_sequencia(self,id_ou_indice): #permite receber como paramentro um inteiro que é o indice ou uma string id que é a identificação da sequencia
+    def get_tamanho_sequencia(self,arg): #permite receber como paramentro um inteiro que é o indice ou uma string id que é a identificação da sequencia
         """Soma a quantidade nucleotideos ou aminoácidos de uma sequencia"""
-        indice = id_ou_indice if (isinstance(id_ou_indice, int)) else self.ids.index(id_ou_indice)
+        busca = arg if (isinstance(arg, int)) else self.ids.index(arg)
         tamanho = 0
-        if((len(self.composicao_total) < indice) or not isinstance(indice, int)): 
+        if((len(self.composicao_total) < busca) or not isinstance(busca, int)): 
             self.message_view("Sequencia não encontrada!")
             return 0
-        for n in self.composicao_total[indice]:
-            tamanho += self.composicao_total[indice][n]
+        for n in self.composicao_total[busca]:
+            tamanho += self.composicao_total[busca][n]
         return tamanho
 
-    def nova_sequencia(self,id):
+    def nova_sequencia(self,id): #id é a identificação da sequência a ser armazenada
        """Insere uma nova sequencia na lista ids"""
        if not(self.seq_existe(id)):
           self.ids.append(id)
@@ -84,22 +84,24 @@ class Bioprof:
           self.message_view("Sequencia já inserida!")   
           return False
        
-    def get_sequencia(self,id):
+    def get_sequencia(self,arg):
         """ Retorna a sequencia armazenada com seus nucleotídeos (DNA e RNA) ou dos aminoácidos (Proteina)"""
-        return self.sequencia[ self.ids.index(id) ]  if (self.seq_existe(id)) else None
+        indice = arg if (isinstance(arg, int)) else self.ids.index(arg)
+        return None if not(self.seq_existe(arg)) else self.sequencia[ indice ]
     
-    def get_composicao_seq(self,id):
+    def get_composicao_seq(self,arg):
         """ Retorna a composição da sequência com os totais de nucleotídeos (DNA e RNA) ou dos aminoácidos (Proteina) """
         if (self.seq_existe(id)):
-            temp = f"T({self.get_tamanho_sequencia(self.ids.index(id))}): "
-            for chave, valor in self.composicao_total[ self.ids.index(id) ].items():
+            indice = arg if (isinstance(arg, int)) else self.ids.index(arg)
+            temp = f"T({self.get_tamanho_sequencia(indice)}): "
+            for chave, valor in self.composicao_total[ indice ].items():
                 temp +=  chave +'('+str(valor)+')'+','
             return temp
         self.message_view("Sequencia não encontrada!")   
 
-    def get_tipo_seq(self,id):
+    def get_tipo_seq(self,arg):
         """Identifica uma sequencia se é de DNA, RNA ou PROTEINA"""
-        seq = self.get_sequencia(id)
+        seq = self.get_sequencia(arg)
         if(seq.find("U") != -1):  
             return "RNA"
         return "DNA" if(len(re.findall(r'[^ACGT]', seq)) == 0) else "Proteina" #Se sequencia contém somente ACGT é um DNA
@@ -117,10 +119,11 @@ class Bioprof:
 
 
 
-    def insert_comment(self,id,info):
+    def insert_comment(self,arg,info):
        """Armazena o comentário da sequência"""
-       if (self.seq_existe(id) and info is not None):
-            self.info[self.ids.index(id)] = info
+       if (self.seq_existe(arg) and info is not None):
+            busca = self.ids.index(arg) if isinstance(arg, int) else arg
+            self.info[ busca ] = info
      
     def add_item(self,id,item):
         """Adciona um somatório de nucleotídos ou aminoácidos da sequência"""
@@ -139,10 +142,10 @@ class Bioprof:
         else:
             self.message_view(f"-Identificação de sequência não encontrada!{id}")
                     
-    def ver_info_seq(self,id):
+    def ver_info_seq(self,arg):
         """Exibe dados de uma sequência"""
         if(self.seq_existe(id)):
-            indice = self.ids.index(id)
+            indice = arg if (isinstance(arg, int)) else self.ids.index(arg)
             print("Informações da sequência:")
             print("=========================")
             print(f"Id: {self.ids[indice]}")
@@ -198,7 +201,7 @@ class Bioprof:
                         for i in [*self.line]:
                             self.add_item(self.id,i)    
 
-    def add_seq(self,n1,n2,n3):
+    def adiciona_seq(self,n1,n2,n3):
         """Insere uma sequência através de código"""
         if(self.nova_sequencia(n1)):
             self.insert_comment(n1,n2)
@@ -206,6 +209,17 @@ class Bioprof:
                 self.add_item(n1,n) 
         else:
             self.message_view("Erro ao adicionar ou sequência já inserida!")   
+    
+    def remove_seq(self,arg):
+        """Remove uma sequência usando o id da sequencia o index armazenado em ids"""
+        if (self.seq_existe(arg)):
+            indice = arg if isinstance(arg, int) else self.ids.index(arg) 
+            self.info.pop( self.ids[ indice ]) #primeiro remove a info da sequencia se existir 
+            self.sequencia.pop(indice) #remove a sequencia do id removido (as referencias se ajustam)
+            self.ids.pop(indice) #remove a identificação da sequencia armazenada
+            return True
+        else: return False
+
 
     # Calcula a distância de Hamming (dH) entre duas sequências
     def dH(self,id1,id2):
@@ -225,11 +239,11 @@ class Bioprof:
         else: self.message_view("Identificação das sequências não encontrada!")       
         return False
     
-    def rna2proteina(self,id):
+    def rna2proteina(self,arg):
         proteina = []
-        if(self.seq_existe(id)):
-            if(self.get_tipo_seq(id) == "RNA"):
-                mRNA = self.get_sequencia(id)
+        if(self.seq_existe(arg)):
+            if(self.get_tipo_seq(arg) == "RNA"):
+                mRNA = self.get_sequencia(arg)
                 for i in range(0, len(mRNA), 3):
                     codon = mRNA[i:i+3]  # Extrai o códon de 3 nucleotídeos
                     aminoacido = self.codons.get(codon, 'X')  # Obtém o aminoácido correspondente ao códon
@@ -240,11 +254,11 @@ class Bioprof:
         else: self.message_view("Identificação das sequências não encontrada!")              
         return None
     
-    def transc_dna2rna(self,id):
+    def transc_dna2rna(self,arg):
         """Transcrição de uma sequência de DNA em um mRNA -Substitui todas as ocorrências de 'T' por 'U' """
-        if(self.seq_existe(id)):
-            if(self.get_tipo_seq(id) == "DNA"):
-                DNA = self.get_sequencia(id)
+        if(self.seq_existe(arg)):
+            if(self.get_tipo_seq(arg) == "DNA"):
+                DNA = self.get_sequencia(arg)
                 mRNA =  DNA.replace('T', 'U')
                 return mRNA
             else: self.message_view("Sequência para transcrição não é um DNA!")              
@@ -252,15 +266,15 @@ class Bioprof:
         return None
 
 
-    def get_kmers(self,id,k):
+    def get_kmers(self,arg,k):
         """Retorna uma lista de sequencias k da janela deslizante da sequência
         :param sequencia: A sequência de entrada (string)
         :param k: O comprimento dos k-mers (inteiro)
         :return: Uma lista de k-mers
         """
-        if(self.seq_existe(id)):
-            if(k <= self.get_tamanho_sequencia(id)):
-                sequencia = self.get_sequencia(id)
+        if(self.seq_existe(arg)):
+            if(k <= self.get_tamanho_sequencia(arg)):
+                sequencia = self.get_sequencia(arg)
                 kmers = []
                 for i in range(len(sequencia) - k + 1):
                     kmers.append(sequencia[i:i + k])
@@ -391,3 +405,41 @@ class Bioprof:
 
         return scoring_matrix
 
+class encadear(Bioprof):
+
+    def __init__(self):
+        super().__init__()
+        self.id = id
+        self.retorno = ""
+        
+    def dna(self,arg):
+        self.seq = arg
+        if self.seq_existe(self.seq):
+            self.retorno = self.get_sequencia(self.seq)
+        else: self.message_view("Sequencia não encontrada!",True)   
+        return self
+
+    def rm_introns(self,*args):
+        for arg in args:
+            if isinstance(arg, str):
+                self.retorno = re.sub(arg, "", self.retorno)
+        return self
+    
+    def transcreve(self):
+        self.adiciona_seq("Transcricao00x2","Sequencia armazenada de forma temporária para calculo de transcrição",self.retorno)
+        self.retorno = self.transc_dna2rna("Transcricao00x2")
+        self.remove_seq("Transcricao00x2")
+        return self
+    
+    def traduz(self):
+        self.adiciona_seq("Traducao00x1","Sequencia armazenada de forma temporária para calculo de transcrição",self.retorno)
+        self.retorno = self.rna2proteina("Traducao00x1")
+        self.remove_seq("Traducao00x1")
+        return self
+
+    def imprime(self):
+        print(self.retorno)
+        return self
+
+    def get(self):
+        return self.retorno
