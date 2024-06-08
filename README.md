@@ -1,4 +1,4 @@
-
+## Biblioteca Bioclass <div style="background-color:#f2f2f2; padding:10px;"> <a href="https://ajudabioclass.onrender.com/">Site ajuda Bioclass</a> | <a href="https://github.com/paulo-ufmg/Bioclass/blob/main/LICENSE.txt">Licença</a> |
 # Bioclass
 
 <img src="dados/logo.png" alt="Bioclass" width="128" style="float:left"/>
