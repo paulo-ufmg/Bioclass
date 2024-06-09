@@ -1,7 +1,0 @@
-# pip install blosum
-from Bioclass import Bioprof
-seq = Bioprof()
-arquivo = "sequencias_spike.fasta.txt"
-seq.leiaArquivoFasta(arquivo)
-print("Quantidade de sequencias carregadas", len(seq.get_seqs()))
-seq.matriz_d()

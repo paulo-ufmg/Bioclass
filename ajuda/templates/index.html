@@ -1,175 +1,648 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
+  <head>
+
     <meta charset="UTF-8">
+    <meta name="robots" content="noindex"/> <!-- index,follow"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="Mente Maker">
-    <meta property="og:description" content="Python Online">
-    <meta id="icon" property="og:image" content="https://copiladoronline.onrender.com/static/img/logo.ico">
-    <meta property="og:url" content="https://copiladoronline.onrender.com">
-    <title>Python Online</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-            color: #333;
-            transition: background-color 0.3s, color 0.3s;
-        }
+    <meta property="og:title" content="Bioclass Classe Python">
+    <meta property="og:description" content="Ajuda Bioclass">
+    <meta id="icon" property="og:image" content="https://atende.dev.br/ufmg/logo.png">
+    <meta property="og:url" content="https://ajudabioclass.onrender.com">
+    <title>Bioclass Ajuda</title>
 
-        #container {
-            width: 80%;
-            max-width: 90%;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s;
-        }
+        <!-- Bootstrap css -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/compile.css') }}">
 
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #007bff;
-        }
+  </head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N63QQGSQD4"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-        p {
-            margin-bottom: 10px;
-        }
+  gtag('config', 'G-N63QQGSQD4');
+</script>
+    <body> <!-- class="bg-light text-dark"-->
+        <div class="vertical-nav bg-white" id="sidebar">
+          <div class="py-4 px-3 mb-4 bg-light">
+            <div id="logo" class="media d-flex align-items-center"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="..." width="65" class="mr-3 rounded-circle img-thumbnail shadow-sm">
+              <div class="media-body">
+                <h4 class="m-0">Bioclass Help</h4>
+                <p class="font-weight-light text-muted mb-0">Bioinformática</p>
+              </div>
+            </div>
+          </div>
 
-        textarea {
-            width: 98%;
-            height: 350px;
-            margin-bottom: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 18px;
-            resize: vertical;
-            background-color: #f4f4f4;
-            color: #333;
-            transition: background-color 0.3s, color 0.3s;
-        }
+          <p class="text-gray font-weight-bold text-uppercase px-3 small pb-4 mb-0">Índice</p>
 
-        button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            display: block;
-            margin: 20px auto 0;
-            transition: background-color 0.3s, color 0.3s;
-        }
+          <ul class="nav flex-column bg-white mb-0">
+            <li class="nav-item">
+              <a href="#introducao" id="inicio" class="nav-link text-dark font-italic bg-light">
+                        <i class="fa fa-align-left mr-3 text-primary fa-fw"></i>
+                        Introdução
+                    </a>
+            </li>
+            <li class="nav-item">  
+              <a href="#estrutura" class="nav-link text-dark font-italic bg-light">
+                        <i class="fa fa-th mr-3 text-primary fa-fw"></i>
+                        Estrutura
+                    </a>
+            </li>
+            <li class="nav-item">
+              <a href="#atributos" class="nav-link text-dark font-italic bg-light">
+                        <i class="fa fa-table mr-3 text-primary fa-fw"></i>
+                        Atributos
+                    </a>
+            </li>
+            <li class="nav-item">
+              <a href="#metodos" class="nav-link text-dark font-italic bg-light">
+                        <i class="fa fa-tasks mr-3 text-primary fa-fw"></i>
+                        Métodos
+                    </a>
+            </li>
+            <li class="nav-item">
+              <a href="#chaining" class="nav-link text-dark font-italic  bg-light">
+                        <i class="fa fa-link mr-3 text-primary fa-fw"></i>
+                        Chaining
+                    </a>
+            </li>
 
-        button:hover {
-            background-color: #0056b3;
-        }
 
-        #resultado {
-            margin-top: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            overflow: auto;
-            background-color: #f4f4f4;
-            transition: background-color 0.3s;
-        }
 
-        #resultado pre {
-            margin: 0;
-        }
+          </ul>
 
-        #resultado pre.error {
-            color: red;
-        }
+          <p class="text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">Fundamentos </p>
 
-        .dark-mode {
-            background-color: #1e1e1e !important;
-            color: #d4d4d4 !important;
-        }
+          <ul class="nav flex-column bg-white mb-0">
+            <li class="nav-item">
+              <a href="#encapsulamento" class="nav-link text-dark font-italic bg-light">
+                        <i class="fa fa-th-large mr-3 text-primary fa-fw"></i>
+                        Encapsulamento
+                    </a>
+            </li>
+            <li class="nav-item">
+              <a href="#abstracao" class="nav-link text-dark font-italic bg-light">
+                        <i class="fa fa-eye mr-3 text-primary fa-fw"></i>
+                        Abstração
+                    </a>
+            </li>
+            <li class="nav-item">
+              <a href="#heranca" class="nav-link text-dark font-italic bg-light">
+                        <i class="fa fa-cubes mr-3 text-primary fa-fw"></i>
+                        Herança
+                    </a>
+            </li>
+            <li class="nav-item">
+              <a href="#polimorfismo" class="nav-link text-dark font-italic  bg-light">
+                        <i class="fa fa-adjust mr-3 text-primary fa-fw"></i>
+                        Polimorfismo
+                    </a>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- End vertical navbar -->
 
-        .dark-mode #container {
-            background-color: #252526 !important;
-        }
 
-        .dark-mode h1 {
-            color: #61dafb !important;
-        }
+        <!-- Page content holder -->
+        <div class="page-content p-5" id="content">
+          <!-- Toggle button -->
+          <button id="sidebarCollapse" type="button" class="btn btn-light bg-white rounded-pill shadow-sm px-4 mb-4"><i class="fa fa-bars mr-2"></i><small class="text-uppercase font-weight-bold"></small></button>
 
-        .dark-mode textarea {
-            background-color: #1e1e1e !important;
-            color: #d4d4d4 !important;
-        }
+          <section id="introducao"  class="section">
+            <!-- Demo content -->
+            <!-- Autores-->
+            <div id="autores" >
+              <div class="d-flex justify-content-end">
+                
+                  <div class="media d-flex align-items-center"><img src="{{ url_for('static', filename='img/_fred.png') }}" alt="..." width="64" class="mr-3 rounded-circle img-thumbnail shadow-sm">
+                                                                         
+                    <div class="media-body">
+                      <h4 class="m-0">Fredy</h4>
+                      <p class="font-weight-light text-muted mb-0">fredyvp@ufmg.br</p>
+                    </div>
+                  </div>
+                
 
-        .dark-mode button {
-            background-color: #1e1e1e !important;
-            color: #d4d4d4 !important;
-        }
+                
+                  <div class="media d-flex align-items-center"><img src="{{ url_for('static', filename='img/_paulo.png') }}" alt="..." width="64" class="mr-3 rounded-circle img-thumbnail shadow-sm">
+                    <div class="media-body">
+                      <h4 class="m-0">Paulo</h4>
+                      <p class="font-weight-light text-muted mb-0">paulo-rocha@ufmg.br</p>
+                    </div>
+                  </div>    
+                
+                
+                  <div class="media d-flex align-items-center"><img src="{{ url_for('static', filename='img/_rodrigo.png') }}" alt="..." width="64" class="mr-3 rounded-circle img-thumbnail shadow-sm">
+                    <div class="media-body">
+                      <h4 class="m-0">Rodrigo</h4>
+                      <p class="font-weight-light text-muted mb-0">rod.jereissati@gmail.com</p>
+                    </div>
+                  </div>      
+                
+              </div>  
+            </div>
+                
 
-        .dark-mode #resultado {
-            background-color: #1e1e1e !important;
-        }
 
-        .dark-mode #resultado pre.error {
-            color: #ff6188 !important;
-        }
-    </style>
-</head>
-<body>
-    
-    <div id="container">
-        <h1>Python Online</h1>
-        <button onclick="toggleTheme()">Alterar Tema</button>
-        <p>Insira seu código Python abaixo e clique no botão "Executar" para ver o resultado:</p>
-        <textarea id="code" placeholder="# Insira seu código aqui" spellcheck="false"></textarea><br>
-        <button onclick="executarCodigo()">Executar</button>
-        <div id="resultado"></div>
+
+            <h2 class="display-4">Bioclass Python - Bioinformática</h2>
+            <div class="input-group mb-3">
+              <input type="text" class="form-control" placeholder="Procurar" aria-label="Recipient's username" aria-describedby="button-addon2">
+              <div class="input-group-append">
+                <button class="btn btn-primary" type="button" id="button-addon2"><i class="fa fa-search active" aria-hidden="true" style="color:white"></i></button>
+              </div>
+            </div>
+                      <br/><br/><br/>   
+            
+            <p class=" mb-0 mr-10">Este é o resultado de um trabalho dos alunos da disciplina de Ambientes de Computação da Pós Graduação do Departamento de Ciência da Computação da UFMG, 2024.</p>
+            <p class="">Código fonte: <a href="https://github.com/paulo-ufmg/Bioclass" class="text-primary" target="_blank">
+                <u>Github</u></a>
+            </p>
+            <div class="separator"></div>
+            <div class="row mr-10">
+              <div class="col-xs-12">
+                <p class="">A biblioteca Bioclass, tem o objetivo didádico para construção de scripts para um conjunto de códigos de software destinadas a aplicações em Bioinformática. Seu principal objetivo é fornecer uma introdução a Bioinformática com suas  análise de dados biológicos e a resolução de problemas comuns, tais como a manipulação de sequências de DNA, RNA e proteínas</p>
+
+                <h5>Exemplo de Uso</h5>
+                <p class="">A forma básica para usar a ferramenta Bioclass para ler um arquivo FASTA e calcular a frequência de nucleotídeos em uma sequenca de DNA:.
+                </p>
+                <pre class="pre-scrollable bg-dark text-light p-3 border border-primary rounded">
+                  <span class="text-success"># importa a classe Bioprof da biblioteca Bioclass</span>
+                  from Bioclass import Bioprof
+
+                  <span class="text-success"># Instancia o objeto seq com a classe Bioprof</span>
+                  seq = Bioprof()
+
+                  <span class="text-success"># Carrega sequências de um arquivo FASTA e armazena todas em sua biblioteca</span>
+                  seq.leiaArquivoFasta(nome_do_arquivo_fasta) 
+
+                  <span class="text-success"># Os método da Classe Bioprof recebe como argumento uma string com o id da sequência ou um int (index da sequencia armazenada)</span>
+                  print(f"Frequência de nucleotídeo: {seq.get_composicao_seq(identificação_da_sequencia)}")
+
+                </pre>
+
+
+                <div class="bg-white p-5 rounded my-5 shadow-sm">
+                  <h5>Conclusão</h5>
+                  <p class=" font-italic mb-0">"A Bioclass é uma biblioteca para efeitos didáticos para iniciantes em Bioinformática para demonstrar como desenvolver uma programação utilizando o paradigma orientada a objeto para construção de ferramentas que facilita o trabalho com dados biológicos em Python. Ela permite introduzir conceitos básico para construção de códigos para análises complexas de maneira eficiente e rápida, contribuindo significativamente para construção de códigos para aprendizado de Bioinformática."</p>
+                </div>
+                <p class="">
+                </p>
+              </div>
+            </div>
+          </section>  
+
+        
+          <section id="estrutura"  class="section"><h2>Estrutura</h2>
+            <p>A biblioteca Bioclass possui duas classes:</p>
+
+            <div class="container">
+              <div class="row">
+                  <div class="col-12 col-md-6">
+                      <div class="p-3 border bg-light">
+                        <img src="{{ url_for('static', filename='img/bioprof_logo.png') }}" class="img-fluid float-left mr-3" alt="Example Icon">
+                        <p>Principal classe da biblioteca <strong>Bioclass</strong> a <strong>Bioprof</strong> é responsável pela manipulação de sequências de genomas.</p>
+                        <p>Ela contém uma estrutura de dados para armazenar uma biblioteca de sequências, armazenando juntamente sua identificação, informação e sua composição.</p>
+                        <p>Para alimentar a biblioteca pode-se fazer uso de dois métodos:
+                          <ul>
+                            <li><strong><i>def adiciona_seq(self,n1,n2,n3):</i></strong><br>
+                              <small>"""Insere uma sequência através de código """</small>
+                              <ul class="list-unstyled">
+                                  <li>#n1 - string com a identificação da sequência</li>
+                                  <li>#n2 - string com informações sobre a sequência</li>
+                                  <li>#n3 - srting da seqUencia</li>
+                              </ul>
+                            </li>
+                            <br>
+                            <li><strong><i>def leiaArquivoFasta(self,nome_arquivo):</i></strong><br>
+                              <small>"""Lê todas as sequências de um arquivo Fasta"""</small></li>
+                          </ul>
+                          
+                      </div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                      <div class="p-3 border bg-light">
+                        <img src="{{ url_for('static', filename='img/encadear_logo.png') }}" class="img-fluid  float-left mr-3" alt="Example Icon">
+                        <p>Classe <strong>“Encadear”</strong> é filha da classe Bioprof, herdando todos os métodos da classe mãe, recurso denominado de herança da programação orientada a objeto e constrói  a técnica de <strong>chaning</strong> para encadear comandos em uma instrução de código.</p>
+                        <p>A técnica de <strong>chaining</strong> (ou encadeamento) é uma prática comum em programação, onde você pode chamar múltiplos métodos em uma única linha de código. Esse método permite que você execute várias operações sequencialmente sem precisar escrever código adicional para armazenar o valor intermediário.</p>
+                        <strong>Característica</strong>
+                        <ul><li>Sintaxe Compacta</li>
+                            <li>Leitura Fluida</li>
+                            <li>Eficiência</li>
+                          </ul>
+                      </div>
+                  </div>
+              </div>
+          </div>
+            
+            
+
+            
+          
+          </section>
+          <section id="atributos" class="section mb-5"><h2>Atributos</h2>
+            <img src="{{ url_for('static', filename='img/bioprof_logo.png') }}" class="img-fluid  mr-3 mb-3" width="360" alt="Example Icon">
+            <div class="row">
+              <div class="col-7">
+                  <p>Basicamente os atributos da classe Bioprof são os de armazenamento dos dados da sequência que resume em:</p>
+                  <ul>
+                    <li>Lista de string para identificação da sequência (list(ids))
+                      <strong class="d-block">self.ids = []</strong>
+                    </li>
+                    <li>Dicionário para informação complementar da sequência (dict(info))
+                      <strong class="d-block">self.info ={}</strong>
+                    </li>
+                    <li>Lista de string com os nucleotídeos ou aminoácidos da sequência (list(sequencia))
+                      <strong class="d-block">sequencia = []</strong>
+                    </li>
+                    <li>Lista de dicionário com a composição da sequencia com quantidade de componentes (list(dict(sequencia)))
+                      <strong class="d-block">composicao_total = [] </strong>#{"A":x,"T":y,"C":z,"G":t} nucleotídeos ou aminoácidos
+                    </li>
+                  </ul>
+
+              </div>
+              <div class="col-4 offset-1">
+                <p>Diagrama de classe</p>
+                <img src="{{ url_for('static', filename='img/diagram_classe_bioprof.png') }}" class="img-fluid" alt="Diagrama de classe">
+
+
+              </div>
+
+
+            </div>
+            
+            
+            <strong class="m=3">Visualização de armazenamento da biblioteca</strong>
+            
+            
+            <div id="gif-container" class="container-fluid p-0 "><!--d-flex justify-content-center-->
+              <img id="gifImage" src="{{ url_for('static', filename='img/apresenta_estrutura.png') }}" class="img-fluid" alt="Vídeo">
+              <!-- <button class="gif-button" onclick="startGif()">Visualizar</button> -->
+            </div>
+          
+          </section>
+          <section id="metodos"   class="section"><h2>Métodos da Classe</h2>
+            
+            <!-- =================================== -- >  
+            <div class="metodo"  data-target="get_seqs">
+              <p class="text-primary"><strong><i>def get_seqs(self):</i></strong>
+              <span class="text-waring d-block"> """Retorna a lista de <b>sequencias</b> registradas"""</span></p>
+              <span class="pratique text-danger"><img src="{{ url_for('static', filename='img/pratique.png') }}" width="64" class="img-fluid" alt="Example Icon">
+                Pratique!</span>
+              <span class="bio text-info"><img src="{{ url_for('static', filename='img/biologo.png') }}" width="40" class="img-fluid" alt="Example Icon">
+                O que é?</span>
+            </div>    
+
+              <!-- =================================== -- >  
+            <div class="separator"></div> 
+            
+            <div class="metodo" data-target="adiciona_seq">
+              <p class="text-primary"><strong><i>def adiciona_seq(self,n1,n2,n3):</i></strong>
+              <span class="text-waring d-block">"""Insere uma sequência através de código"""</span></p>
+              <ul><li>#n1 - string com a identificação da sequência</li>
+                  <li>#n2 - string com informações sobre a sequência</li>
+                  <li>#n3 - srting da seqUencia</li>
+              </ul>
+                  
+              <span class="pratique text-danger"><img src="{{ url_for('static', filename='img/pratique.png') }}" width="64" class="img-fluid" alt="Example Icon">
+                Pratique!</span>
+              <span class="bio text-info"><img src="{{ url_for('static', filename='img/biologo.png') }}" width="40" class="img-fluid" alt="Example Icon">
+                O que é?</span>  
+            </div>
+
+            <!-- =================================== -- >    
+            <div class="separator"></div> 
+              <div class="metodo" data-target="leiaArquivoFasta">
+              <p class="text-primary"><strong><i>def leiaArquivoFasta(self,nome_arquivo):</i></strong>
+              <span class="text-waring d-block"> """ Lê  todas as sequências de um <b>arquivo Fasta</b> """</span></p>
+              
+              <span class="pratique text-danger"><img src="{{ url_for('static', filename='img/pratique.png') }}" width="64" class="img-fluid" alt="Example Icon">
+                Pratique!</span>
+              <span class="bio text-info"><img src="{{ url_for('static', filename='img/biologo.png') }}" width="40" class="img-fluid" alt="Example Icon">
+                O que é?</span>  
+            </div>
+            -->
+              {% for metodo, items in metodos.items() %}
+                <div class="metodo" data-target="{{ metodo | extrair_nome_da_funcao }}">
+                  <p class="text-primary"><strong><i>{{ metodo }}</i></strong>
+                  <span class="text-waring d-block">"""{{ items[0] }}"""</span></p> 
+                  <ul>
+                    {% for item in items %} 
+                      {% if item != items[0] %}
+                        <li>{{ item }}</li>
+                      {% endif %}  
+                    {% endfor %}
+                  </ul>
+                  <span class="pratique text-danger"><img src="{{ url_for('static', filename='img/pratique.png') }}" width="64" class="img-fluid" alt="Example Icon">
+                    Pratique!</span>
+                  <span class="bio text-info oculto"><img src="{{ url_for('static', filename='img/biologo.png') }}" width="40" class="img-fluid" alt="Example Icon">
+                    O que é?</span>  
+                </div>
+                <div class="separator"></div> 
+              {% endfor %}
+          </section>
+          <section id="chaining" class="section mb-5">
+              <h2 class=" text-primary">Técnica Chaining <small class="text-info"><i class="fa fa-link mr-3 text-primary fa-fw"></i> ( encadeamento de métodos )</small></h2>
+              <p>A técnica de <strong>chaining</strong> (ou encadeamento) é uma prática comum em programação, onde você pode chamar múltiplos métodos em uma única linha de código. Essa técnica permite que você execute várias operações sequencialmente sem precisar escrever código adicional para armazenar o valor intermediário.</p>
+              <strong>Característica</strong>
+              <ul><li>Sintaxe Compacta</li>
+                  <li>Leitura Fluida</li>
+                  <li>Eficiência</li>
+                </ul>
+              <p>Na construção da classe filha "Encadear" implementa essa técncia e aproveita para demontrar o fundamento de herança do paradigma orientado a objeto.</p>
+              <strong>Exemplo:</strong><br>
+              <pre>
+    from bioclass import Encadear
+    obj = Encadear
+    obj.adiciona_seq('dna','Exemplo','ATGCGTACCTGACGCTAGCTAGCTAGGCTAGCTAGCCTAGGCTAACG')
+    obj.dna(0).transcreve().traduz().imprime()
+              </pre>  
+              <strong class="ml-5">Código da Classe:</strong><br>
+              <div class="card-body bg-dark text-light ml-5 mr-5">
+              <pre class="pre-scrollable text-light"><code>
+
+class Encadear(Bioprof):
+    """ Classe demonstra técnica de modelamento de métodos em cascada ( Técnica chanining ) """                
+
+    def __init__(self):
+        super().__init__()
+        self.retorno = ""
+    #-------------------------------------    
+    def dna(self,arg,sequencia = None):
+        """Armazena uma sequẽncia para operação de encadeamento"""
+        if self.seq_existe(arg) or sequencia != None: #prossegue para uma sequencia válida
+            self.retorno_chaining = self.get_sequencia(arg) if(sequencia == None) else sequencia
+        else: self.message_view("Sequencia não encontrada!",True)   
+        return self
+    #-------------------------------------    
+    def rm_introns(self,*args):
+        for arg in args:
+            if isinstance(arg, str):
+                self.retorno = re.sub(arg, "", self.retorno)
+        return self
+    #-------------------------------------    
+    def transcreve(self):
+        self.adiciona_seq("Transcricao00x2","Sequencia armazenada temporáriamente",self.retorno)
+        self.retorno = self.transc_dna2rna("Transcricao00x2")
+        self.remove_seq("Transcricao00x2")
+        return self
+    #-------------------------------------    
+    def traduz(self):
+        self.adiciona_seq("Traducao00x1","Sequencia armazenada temporáriamente",self.retorno)
+        self.retorno = self.rna2proteina("Traducao00x1")
+        self.remove_seq("Traducao00x1")
+        return self
+    #-------------------------------------    
+    def imprime(self):
+        print(self.retorno)
+        return self
+    #-------------------------------------    
+    def get(self):
+        return self.retorno
+    #=====================================    
+                   </code>
+              </pre>
+            </div>
+
+          </section>  
+
+          <section id="encapsulamento"    class="section"><h2>Encapsulamento</h2>
+            <p>O encapsulamento refere-se ao agrupamento de dados (atributos) e métodos (funções ou procedimentos) que operam sobre esses dados em uma única unidade chamada objeto. Esse princípio promove a ocultação de informações, restringindo o acesso direto aos dados do objeto e expondo apenas o que é necessário através de métodos públicos. Isso ajuda a proteger a integridade dos dados e a reduzir a dependência entre diferentes partes de um programa.</p>
+          </section>
+          <section id="abstracao"    class="section"><h2>Abstração</h2>
+            <p>A abstração é o processo de simplificação de sistemas complexos ao ocultar os detalhes desnecessários e expor apenas as características essenciais. Em POO, isso é realizado através de classes e objetos, onde uma classe define um modelo ou conceito geral e um objeto é uma instância específica dessa classe. A abstração permite que os desenvolvedores lidem com altos níveis de complexidade, focando-se em aspectos relevantes do problema sendo resolvido.</p>
+          </section>
+          <section id="heranca"    class="section"><h2>Herança</h2>
+            <p>A herança é um mecanismo que permite a criação de novas classes a partir de classes existentes, promovendo o reuso de código. Uma classe derivada (ou subclasse) herda os atributos e métodos da classe base (ou superclasse), podendo também adicionar novos atributos e métodos ou sobrescrever os métodos existentes. Isso promove a reutilização e a extensão de funcionalidades sem a necessidade de duplicação de código.</p>
+          </section>
+          <section id="polimorfismo"    class="section"><h2>Polimorfismo</h2>
+            O polimorfismo permite que objetos de diferentes classes sejam tratados como objetos de uma classe comum. Isso é geralmente alcançado através da herança e da implementação de interfaces. O polimorfismo facilita o uso de um método de forma uniforme em diferentes tipos de objetos, permitindo que o mesmo método ou operador funcione de maneira diferente com base no objeto com o qual está sendo utilizado. Existem dois tipos principais de polimorfismo: o polimorfismo de sobrecarga (compile-time) e o polimorfismo de substituição (runtime).
+          </section>
+
+        </div>
+        <!-- End demo content -->
+<!-- Estrutura da Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-primary" id="exampleModalLabel"><img src="{{ url_for('static', filename='img/pythonlogo.png') }}" width="32" class="img-fluid" alt="Example Icon">Compilador Python <span class="text-info" id="nome_metodo"></span></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="compilador" data-code="">
+          {% include 'help_bar_code.html' %}
+          <textarea id="ide" placeholder="# Insira seu código aqui" spellcheck="false">from Bioclass import Bioprof</textarea><br>
+          <button id="run" type="button" title="Executa código Python">Executar</button>
+          <button id="clear" type="button" title="Apaga o terminal de resultado">Limpar</button>
+          <div id="result">
+            <span class="text-success"><pre>Resultado&raquo;</pre></span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+        <!-- <button type="button" class="btn btn-primary">Salvar mudanças</button> -->
+      </div>
     </div>
+  </div>
+</div>
 
-    <script>
-        function toggleTheme() {
-            const body = document.body;
-            const container = document.getElementById('container');
-            const textarea = document.getElementById('code');
-            const buttons = document.querySelectorAll('button');
-            const resultado = document.getElementById('resultado');
+<!-- Estrutura da Modal bio-->
+<div class="modal fade" id="bioModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-primary" id="exampleModalLabel"><img src="{{ url_for('static', filename='img/biologo.png') }}" width="32" class="img-fluid" alt="Example Icon"> Biologia - O que é?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="bio" data-code="">
+          <h5>O que é?</h5>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+        <!-- <button type="button" class="btn btn-primary">Salvar mudanças</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+<div id="conceito" style="display:none">
+  <div class="get_seqs">
+    <p>Em Bioinformática, uma sequência refere-se à ordem linear de nucleotídeos em uma molécula de DNA ou RNA, ou de aminoácidos em uma proteína.</p>
+    <ul>
+      <li><span class="text-primary">DNA (Ácido Desoxirribonucleico): </span><br>
+        <p>Consiste em uma sequência de nucleotídeos representados A (adenina), T (timina), C (citosina) e G (guanina).</p>
+        <span>Exemplo:</span><br>
+        <strong>ATGCGTACGTAGCTAG</strong>
+      </li>
+      <li><span class="text-primary">RNA (Ácido Ribonucleico): </span><br>
+        <p>Semelhante ao DNA, mas com uracila (U) substituindo a timina (T).</p> 
+        <span>Exemplo:</span><br>
+        <strong>AUGCGUACGUAGCUAG</strong>
+      </li>
+      <li><span class="text-primary">Proteínas:</span>
+        <p>Compostas por cadeias de aminoácidos, que são representadas por letras únicas. Existem 20 aminoácidos comumente encontrados nas proteínas, como alanina (A), cisteína (C), glicina (G), etc.</p>
+        <span>Exemplo:</span><br>
+        <strong>MKTIIALSYIFCLVFA</strong>
+      </li>
+    </ul>
+  </div>
+  <div class="adiciona_seq">
+    <p>Em Bioinformática, muitas operações e análises requerem a comparação ou o processamento de mais de uma sequências biológicas (como DNA, RNA ou proteínas). Segue algumas exemplos:</p>
+    <ul>
+        <li>Alinhamento de Sequências</li>
+        <li>Busca de Similaridade</li>
+        <li>Comparação de Genomas</li>
+        <li>Análise Filogenética</li>
+        <li>Detecção de Motivos</li>
+        <li>Análise de Expressão Gênica</li>
+        <li>Análise de Variantes Genéticas</li>
+        <li>Anotação de Função de Proteína</li>
+        <li>Montagem de Genomas</li>
+    </ul>   
+    <p>Para execução detas tarefas, o objeto permite o cadastro de várias sequênas, sendo pelo método <b><i>adiciona_seq()</i></b> ou por leitura de arquivo de sequências.</p>
+  </div>
+  <div class="leiaArquivoFasta">
+    <p>Um arquivo FASTA é um formato de arquivo amplamente utilizado para armazenar sequências biológicas, como sequências de DNA, RNA ou proteínas. O formato é simples e humanamente legível, facilitando a manipulação e análise de dados de sequências. Segue o layout de um arquivo FASTA:</p>
+    <ul>
+      <li>Linha de cabeçalho: começa com o sinal ">", seguida por uma descrição opcional ou identificador único da sequência.<br>
+        <small>A linha de cabeçalho pode conter informações adicionais sobre a sequência, como nome do gene, espécie e outras anotações</small><br>
+      </li>
+      <li>A sequência biológica vem imediatamente após a linha de cabeçalho. Ela pode ser dividida em várias linhas para facilitar a leitura, mas não deve conter espaços ou caracteres que não façam parte da sequência.
+      </li>
+    </ul>
+    <span>Exemplo:</span><br>
+    <strong>>seq1 Homo sapiens hemoglobin subunit alpha<br>ATGGTGCTTCTCCTGCTGCTGCTGCTGCTGCTGCTG</strong>
+  </div>
+  <div class="">
+    <p></p>
 
-            body.classList.toggle('dark-mode');
-            container.classList.toggle('dark-mode');
-            textarea.classList.toggle('dark-mode');
-            buttons.forEach(btn => btn.classList.toggle('dark-mode'));
-            resultado.classList.toggle('dark-mode');
-        }
+  </div>
+  <div class="get_tamanho_sequencia">
+    <p>Os tamanhos dos genomas variam enormemente. Organismos mais simples, como vírus e bactérias, tendem a ter genomas muito menores em comparação com organismos mais complexos, como plantas e animais. Além disso, não há uma relação direta entre a complexidade de um organismo e o tamanho do seu genoma (um fenômeno conhecido como o "paradoxo do valor C"). Por exemplo, algumas plantas têm genomas muito maiores do que os humanos.</p>
+			<p>- Já o tamanho de uma sequência é altamente dependente do contexto biológico e da aplicação em questão e podem variar de algumas poucas bases até vários milhões ou bilhões de bases.</p>
+			<b>Exemplos de sequências:</b>
+      <ul>
+        <li>Sequências Genômicas</li>
+        <li>Fragmentos de Sequênciamento</li>
+        <li>Sequências de RNA</li>
+        <li>Sequências sintéticas*</li>
+        <li>Sequências de Exons e Introns</li>
+    </ul>
+    <p>*Oligonucleotídeos: São sequências de DNA ou RNA sintéticas usadas em várias aplicações laboratoriais e geralmente têm de 15 a 100 nucleotídeos.</p>
 
-        function executarCodigo() {
-            var codigo = document.getElementById('code').value;
-            fetch('/execute', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ code: codigo })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    document.getElementById('resultado').innerHTML = "<pre class='error'>" + data.error + "</pre>";
-                } else {
-                    document.getElementById('resultado').innerHTML = "<pre>" + data.output + "</pre>";
-                }
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                document.getElementById('resultado').innerHTML = "<pre class='error'>Erro na requisição. Verifique a conexão com o servidor.</pre>";
-            });
-        }
-    </script>
+  </div>
+  <!-- -------------------------------------------  -->
+  <div class="transc_dna2rna">
+			<p>A transcrição de uma sequência de DNA envolve uma série de eventos biológicos que convertem a informação genética de um gene em uma molécula de RNA mensageiro (mRNA). Este processo é realizado pelas células para expressar genes e produzir proteínas necessárias para várias funções celulares.</p>
+			<b>Componentes Principais:</b>
+      <ul>
+        <li><b>DNA</b> -<small> A molécula que contém a informação genética.</small>:</li>
+        <li><b>RNA Polimerase</b> -<small> A enzima responsável pela síntese do RNA.</small></li>
+        <li><b>Promotores</b> -<small> Sequências de DNA que sinalizam o início de um gene.</small></li> 
+        <li><b>Terminadores</b> -<small> Sequências de DNA que sinalizam o fim do gene.</small></li>
+        <li><b>Fatores de Transcrição</b> -<small> Proteínas que auxiliam na ligação da RNA polimerase ao DNA.</small></li>
+    </ul>
+    <p>A complementaridade de bases garante que a sequência de RNA seja uma cópia precisa da sequência de DNA, com algumas exceções específicas:</p>
+      <ul>
+       <li>Adenina (<b>A</b>) no DNA pareia com uracila (<b>U</b>) no RNA.</li>
+       <li>Timina (<b>T</b>) no DNA pareia com adenina (<b>A</b>) no RNA.</li>
+       <li>Citosina (<b>C</b>) no DNA pareia com guanina (<b>G</b>) no RNA.</li>
+       <li>Guanina (<b>G</b>) no DNA pareia com citosina (<b>C</b>) no RNA.</li>
+      </ul>
+    <p>O mRNA maduro é então transportado do núcleo para o citoplasma (em eucariotos) onde será traduzido em uma sequência de aminoácidos para formar uma proteína funcional. A transcrição é um processo fundamental que garante que a informação genética contida no DNA seja fielmente transferida e utilizada para a síntese de proteínas essenciais à vida.</p>
+  </div>
+  
+  <!-- -------------------------------------------  -->
+  <div class="reverso_complementar">
+    <p>O reverso complementar de uma sequência de DNA é crucial para muitas aplicações em biologia molecular e genética. Ele garante que a sequência de DNA possa ser corretamente lida e manipulada em diversas técnicas laboratoriais. Compreender como determinar e utilizar sequências reverso complementares é essencial para a pesquisa e prática na área das ciências da vida. Um exemplo é a técnica PCR (Reação em Cadeia da Polimerase) e clonagem de genes, dependem de sequências reverso complementares.</p>
+      <p>Para obter o reverso complementar segue dois passos:</p>
+      <ul>
+        <li>Sequência exemplo: [<strong>ATTACGGC</strong>]</li>
+        <li><b>Passo1:</b> Encontrar a sequência complementar do DNA = [<strong>TAATGCCG</strong>]</li>
+        <li><b>Passo2:</b> Inverter essa sequência complementar = [<strong>GCCGTAAT</strong>]</p></li>
+    </ul>
+  </div>
+  <!-- -------------------------------------------  -->
+    <div class="rna2proteina">
+      <p>A tradução de uma sequência de DNA é o processo pelo qual a informação codificada no mRNA (RNA mensageiro) é utilizada para sintetizar uma proteína, as instruções genéticas contidas no DNA são convertidas em uma sequência de aminoácidos que forma uma proteína funcional.</p>
+        <p>Uma sequência de três nucleotídeos no RNA mensageiro (mRNA) (<b>códon</b>) especifica um aminoácido particular ou uma sinalização para iniciar ou terminar a síntese proteica.</p>
+        <b>Função dos Códons na Tradução:</b>
+        <ul>
+          <li><b>Iniciação:</b> O códon de iniciação, geralmente <b>AUG</b>, sinaliza o início da tradução e também codifica o aminoácido metionina.</li>
+          <li><b>Elongação:</b> Durante a elongação, cada códon na sequência de mRNA especifica a adição de um aminoácido à cadeia polipeptídica crescente. O ribossomo lê os códons um de cada vez e, com a ajuda de tRNAs (RNA de transferência), adiciona os aminoácidos correspondentes.</li>
+          <li><b>Término:</b> Códons de terminação (<b>UAA</b>, <b>UAG</b> e <b>UGA</b>) sinalizam o final da tradução, indicando ao ribossomo que a síntese da proteína deve ser encerrada.</li>
+      </ul>
+      <p>As proteínas desempenham funções vitais nas células, incluindo enzimáticas, estruturais, regulatórias e muitas outras, sustentando a vida e a função celular.</p>
+    </div>
+    <!-- -------------------------------------------  -->
+      <div class="dH">
+        <p>A distância de Hamming é uma medida da diferença entre duas sequências de igual comprimento. Ela é usada para quantificar o número de posições em que os símbolos correspondentes são diferentes entre as duas sequências. Em termos de biologia molecular, a distância de Hamming é frequentemente utilizada para comparar sequências de DNA, RNA ou proteínas.</p>
+          
+          <b>Utilização:</b>
+          <ul>
+            <li><strong>Análise de Mutação</strong></li>
+            <li><strong>Comparação de Sequências Genômicas</strong></li>
+            <li><strong>Avaliação de Sequenciamento</strong></li>
+            <li><strong>Identificação de Polimorfismos de Nucleotídeo Único (SNPs)</strong></li>
+        </ul>
+        <p>A distância de Hamming é uma medida simples de diferença entre sequências, mas pode não refletir a complexidade de todas as possíveis mutações ou variações.</p><p>É importante garantir que as duas sequências sendo comparadas tenham o mesmo comprimento, já que a distância de Hamming não é definida para sequências de comprimentos diferentes.</p>
+      </div>
+<!-- -------------------------------------------  -->
+<div class="nome_do_metodo">
+  <p></p>
+    <p></p>
+    <b>Exemplo:</b>
+    <ul>
+      <li></li>
+      <li></li>
+  </ul>
+  <p>Conclusão.</p>
+</div>
+<!-- -------------------------------------------  -->
+
+
+
+
+
+</div>
+        
 </body>
+<script language="javascript" type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+<script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/ajuda.js') }}"></script>
+<script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/compile.js') }}"></script>
+<script language="javascript" type="text/javascript" src=""></script>
+<script language="javascript" type="text/javascript" src=""></script>
+<script language="javascript" type="text/javascript" src=""></script>
+
 </html>
+
+        
+<script>
+ // Simular um clique no item "Introdução" ao carregar a página
+ document.getElementById('inicio').click();  
+
+
+//exibir o video da gifImage na gif-container
+var start = false
+document.getElementById('gif-container').addEventListener('click', function() {
+  const gifImage = document.getElementById('gifImage');
+    gifImage.src = (!start) ? "{{ url_for('static', filename='img/output.gif') }}" : "{{ url_for('static', filename='img/apresenta_estrutura.png') }}";
+  start = !start;
+});  
+
+
+</script>         

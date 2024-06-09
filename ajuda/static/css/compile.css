@@ -1,0 +1,59 @@
+textarea {
+    width: 98%;
+    height: 250px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 18px;
+    resize: vertical;
+    
+    
+    transition: background-color 0.3s, color 0.3s;
+
+/*  Modo light
+    background-color: #f4f4f4;
+    color: #333;
+    */
+
+/*  Modo Dark */
+    background-color: #1e1e1e !important;
+    color: white; /* #d4d4d4 !important; */
+}
+
+/* Estilos personalizados para a navbar */
+.navbar-ajuda-code {
+    font-size: 10px; /* Ajuste o tamanho da fonte conforme necessário */
+    padding-top: 5px; /* Ajuste o espaçamento superior */
+    padding-bottom: 5px; /* Ajuste o espaçamento inferior */
+  }
+
+  .navbar-custom .navbar-nav .nav-link {
+    padding-right: 5px; /* Ajuste o espaçamento lateral */
+    padding-left: 5px;  /* Ajuste o espaçamento lateral */
+  }
+
+/*============*/
+
+        #resultado {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            overflow: auto;
+            background-color: #f4f4f4;
+            transition: background-color 0.3s;
+        }
+
+        #resultado pre {
+            margin: 0;
+        }
+
+        #resultado pre.error {
+            color: red;
+        }
+
+
+.btn_menu {
+    margin-right: 15px;
+}

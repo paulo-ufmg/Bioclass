@@ -8,45 +8,33 @@
 `	`No Bioclass há duas classes principais, quais sejam: Biprof e encadear. Todos os seus métodos estão listados na documentação do código. Com os exemplos de uso, abaixo listados, ilustramos a versatilidade e potencialidades de muitos desses métodos.
 
 **Exemplo de uso:**
-
-Instala Biblioteca Blosum
-
-!pip install blosum
-
-Collecting blosum Downloading blosum-2.0.3-py3-none-any.whl (21 kB) Installing collected packages: blosum Successfully installed blosum-2.0.3
-
-Criando um novo objeto “obj”do mesmo tipo da classe “Bioprof” para contextualizar os métodos
-
+<pre>
+#Carregando a classe de sequenciamento da Biblioteca Bioclass
 from Bioclass import Bioprof
-
-obj=Bioprof()
-
-Arquivo de Exemplo “genoma.fasta”
+#Instanciando o objeto 
+obj = Bioprof()
+<pre>
+#Arquivo de Exemplo “genoma.fasta”
 
 >Humano
-
 ATCGATCGATCG
 
 >Rato
-
 ATAGATCGATCG
 
 >Cachorro
-
 ATCGATGGATCG
 
 >Gato
-
 ATCGATAGATCG
 
 **Método leiaArquivoFasta:**
-
-Lê um arquivo FASTA e armazena as sequências.
-
+<pre>
+#Lê um arquivo FASTA e armazena as sequências.
 obj.leiaArquivoFasta("genoma.fasta")
+</pre>
 
 **Método get_seqs:**
-
 Retorna a lista de IDs de sequências.
 
 obj.get_seqs()
@@ -120,28 +108,32 @@ obj.matriz_d()
 
 Alignment between Humano and Rato: ATCGATCGATCG Alignment between Humano and Cachorro: ATCGAT-CGATCG Alignment between Humano and Gato: ATCGATCGATCG Alignment between Humano and Elefante: ATCGATCGATCG Alignment between Rato and Humano: ATAGATCGATCG Alignment between Rato and Cachorro: ATAGAT-CGATCG Alignment between Rato and Gato: ATAGATCGATCG Alignment between Rato and Elefante: AT-AGATCGATCG Alignment between Cachorro and Humano: ATCGAT-GGATCG Alignment between Cachorro and Rato: ATCGAT-GGATCG Alignment between Cachorro and Gato: ATCGATGGATCG Alignment between Cachorro and Elefante: ATCGATGGATCG Alignment between Gato and Humano: ATCGATAGATCG Alignment between Gato and Rato: ATCGATAGATCG Alignment between Gato and Cachorro: ATCGATAGATCG Alignment between Gato and Elefante: ATCGATAGATCG Alignment between Elefante and Humano: ATCAATAGACCG Alignment between Elefante and Rato: ATCA-ATAGACCG Alignment between Elefante and Cachorro: ATCAATAGACCG Alignment between Elefante and Gato: ATCAATAGACCG
 
-<img src="dados/Matriz_D_method.png" alt="Bioclass" width="128" style="float:left"/>
+
+<img src="dados/matriz_d_method2.png" alt="Bioclass" width="128" style="display:block"/>
+<br>
+
 
 **Exemplos de Encadeamento de métodos**
 
+<pre>
 from Bioclass import encadear
-
 seq=encadear()
-
 seq.adiciona_seq("Genoma","teste","CCACCCTCGTGGTATGGCTAGGCATTCAGGAACCGGAGAACGCTTCAGACCAGCCCGGACTGGGAACCTGCGGGCAGTAGGTGGAAT")
+</pre>
+
 
 
 **Transcreve a sequência com ID "Genoma" para RNA e imprime o resultado.**
 
-print("Resultado datrancrição de Genoma: ",seq.transc_dna2rna("Genoma"))
+<pre>print("Resultado datrancrição de Genoma: ",seq.transc_dna2rna("Genoma"))</pre>
 
-Resultado datrancrição de Genoma: CCACCCUCGUGGUAUGGCUAGGCAUUCAGGAACCGGAGAACGCUUCAGACCAGCCCGGACUGGGAACCUGCGGGCAGUAGGUGGAAU
+Resultado datrancrição de Genoma: <b>CCACCCUCGUGGUAUGGCUAGGCAUUCAGGAACCGGAGAACGCUUCAGACCAGCCCGGACUGGGAACCUGCGGGCAGUAGGUGGAAU</b>
 
 **Encadeia operações de manipulação de sequência, transcrevendo DNA para RNA, traduzindo para proteína e, por fim, imprimindo o resultado final**
 
-seq.dna("Genoma").transcreve().traduz().imprime()
+<pre>seq.dna("Genoma").transcreve().traduz().imprime()</pre>
 
-PPSWYG*AFRNRRTLQTSPDWEPAGSRWN
+<b>PPSWYG*AFRNRRTLQTSPDWEPAGSRWN</b>
 
-<Bioclass.encadear at 0x7c86c9b2ba60>
+
 

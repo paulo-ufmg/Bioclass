@@ -37,6 +37,7 @@ class Bioprof:
             "CAG": "Q","AAU": "N", "AAC": "N", "AAA": "K", "AAG": "K","GAU": "D", "GAC": "D", "GAA": "E", "GAG": "E","UGU": "C", "UGC": "C", "UGA": "*", "UGG": "W",
             "CGU": "R", "CGC": "R", "CGA": "R", "CGG": "R","AGU": "S", "AGC": "S", "AGA": "R", "AGG": "R","GGU": "G", "GGC": "G", "GGA": "G", "GGG": "G"           
         }
+       self.retorno_chaining = "" #usando para armazenar sequencia em utilização de métodos em cascata
 
     def verificar_biblioteca(self,biblioteca):
         if importlib.util.find_spec(biblioteca) is None:
@@ -97,7 +98,7 @@ class Bioprof:
     
     def get_composicao_seq(self,arg):
         """ Retorna a composição da sequência com os totais de nucleotídeos (DNA e RNA) ou dos aminoácidos (Proteina) """
-        if (self.seq_existe(id)):
+        if (self.seq_existe(arg)):
             indice = arg if (isinstance(arg, int)) else self.ids.index(arg)
             temp = f"T({self.get_tamanho_sequencia(indice)}): "
             for chave, valor in self.composicao_total[ indice ].items():
@@ -105,9 +106,9 @@ class Bioprof:
             return temp
         self.message_view("Sequencia não encontrada!")   
 
-    def get_tipo_seq(self,arg):
+    def get_tipo_seq(self,arg,sequencia = None):
         """Identifica uma sequencia se é de DNA, RNA ou PROTEINA"""
-        seq = self.get_sequencia(arg)
+        seq = self.get_sequencia(arg) if(sequencia == None) else sequencia
         if(seq.find("U") != -1):  
             return "RNA"
         return "DNA" if(len(re.findall(r'[^ACGT]', seq)) == 0) else "Proteina" #Se sequencia contém somente ACGT é um DNA
@@ -248,6 +249,7 @@ class Bioprof:
     def rna2proteina(self,arg):
         proteina = []
         if(self.seq_existe(arg)):
+            
             if(self.get_tipo_seq(arg) == "RNA"):
                 mRNA = self.get_sequencia(arg)
                 for i in range(0, len(mRNA), 3):
@@ -256,18 +258,21 @@ class Bioprof:
                     proteina.append(aminoacido)  # Adiciona o aminoácido à lista
                 # Junta os aminoácidos em uma única string
                 return ''.join(proteina) 
-            else: self.message_view("Sequência para transcrição não é um RNA!")              
+            else: 
+                self.message_view("Sequência para transcrição não é um RNA!")              
+                print(self.get_sequencia(arg))
+                exit()
         else: self.message_view("Identificação das sequências não encontrada!")              
         return None
     
     def transc_dna2rna(self,arg):
         """Transcrição de uma sequência de DNA em um mRNA -Substitui todas as ocorrências de 'T' por 'U' """
         if(self.seq_existe(arg)):
-            if(self.get_tipo_seq(arg) == "DNA"):
+            if(self.get_tipo_seq(arg) != "Proteina"):
                 DNA = self.get_sequencia(arg)
                 mRNA =  DNA.replace('T', 'U')
                 return mRNA
-            else: self.message_view("Sequência para transcrição não é um DNA!")              
+            else: self.message_view("Sequência para transcrição já é uma Proteina!")              
         else: self.message_view("Identificação das sequências não encontrada!")              
         return None
 
@@ -301,10 +306,9 @@ class Bioprof:
         else: self.message_view("Não existe Mers suficientes para construir uma estrutura de sequência!")                  
         return None
     
-  #______________________________________________________________  
-    #def matriz_d(self, filename):
+    #--------------------------------------------------------------------------    
     def matriz_d(self):
-        """Calcula a matriz de distância para sequências de proteínas."""
+        """Calcula a matriz de distância para sequências de proteínas. """
         bibliotecas = ['numpy', 'blosum','matplotlib.pyplot','seaborn','scipy.cluster.hierarchy'] # Lista de bibliotecas necessárias
         for biblioteca in bibliotecas: # Verificar cada biblioteca
             if not self.verificar_biblioteca(biblioteca):
@@ -317,17 +321,13 @@ class Bioprof:
         import scipy.cluster.hierarchy as sch
 
         self.blosum_matrix = bl.BLOSUM(62) # Define um atributo de instância
-
-        #sequences = self.get_fasta_sequences(filename)
-        #num_sequences = len(sequences)
-        num_sequences = len(self.ids)
-
+        num_sequences = len(self.ids) 
         # Verifica se todas as sequencias são de proteínas
         for i in range(num_sequences):
             # Verifica se o tipo da sequencia é DNA ou RNA
             if self.get_tipo_seq(i) != 'Proteina':
                 self.message_view("Erro: Não é uma sequência de proteínas!", True) 
-                return # Sai da função se encontrar uma sequência que não seja de proteína
+                #return # Sai da função se encontrar uma sequência que não seja de proteína
 
         # Inicializar matriz de distância
         distance_matrix = np.zeros((num_sequences, num_sequences))
@@ -436,11 +436,11 @@ class Bioprof:
 
         return scoring_matrix
 
-    
+    #===========================================================================================
     def compara_genomas(self,id1,id2):
         """Compara dois genomas e retorna a porcentagem de diferenças"""
         if(self.seq_existe(id1) and self.seq_existe(id2)):
-            if([self.get_tipo_seq(id1),self.get_tipo_seq(id2)] == ['AA','AA']):
+            if([self.get_tipo_seq(id1),self.get_tipo_seq(id2)] == ['DNA','DNA']):
                 if(self.get_tamanho_sequencia(id1)==self.get_tamanho_sequencia(id2)):
                     genoma1 = self.get_sequencia(id1)
                     genoma2 = self.get_sequencia(id2)
@@ -453,45 +453,104 @@ class Bioprof:
                     Dif_Percentual = (Num_Dif / len(genoma1)) * 100
                     return "{:.2f}%".format(Dif_Percentual)      
                 else: self.message_view("As sequências têm comprimentos diferentes.")       
-            else: self.message_view("Para comparar os genomas as sequências devem ser de AA.")       
+            else: self.message_view("Para comparar os genomas as sequências devem ser de DNA.")       
         else: self.message_view("Identificação das sequências não encontrada!")       
         return False
-#__________________________________________________________________________________________________
-class encadear(Bioprof):
+    
+    def reverso_complementar(self,arg):
+        """Retorna o reverso complementar de uma sequência de DNA')"""
+        dic_reverse = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}  # Dicionário
+        nova_seq = []                                           # Cria uma lista auxiliar que será preenchida com valores do Dicionário
+        if(self.seq_existe(arg)):                                # Verifica se a sequência foi carregada
+            if(self.get_tipo_seq(arg)=="DNA"):                   # Verifica se a sequência é um DNA
+                seq = self.get_sequencia(arg)                    # Atribui a string da sequência à variável seq
+                seq = seq[::-1]                                 # Inverte a sequência
+                for i in range(len(seq)):                       # Percorre a sequência invertida do início ao final
+                    nova_seq.append(dic_reverse[seq[i]])        # Alimenta a lista auxiliar com valores do Dicionário
+                                                                # alternativa seria [nova_seq = ''.join(complemento[base] for base in seq)]
+                return ''.join(nova_seq)                        # Retorna a lista auxiliar em formato de string
+            else: self.message_view(f"A sequencia informada não é um DNA![{self.get_tipo_seq(id)}]")
+        else: self.message_view("A sequencia para o Reverso Complentar não foi encontrada!")
+        return None
+    #=============================================================================================
 
-    def __init__(self):
-        super().__init__()
-        self.id = id
-        self.retorno = ""
-        
-    def dna(self,arg):
-        self.seq = arg
-        if self.seq_existe(self.seq):
-            self.retorno = self.get_sequencia(self.seq)
+    def __encontra_codificante_sequencia(self,sequencia,codon_start): #recebe uma sequencia qualquer e devolve uma janela de sequencia codificante
+        stop = ['TAA','TAG','TGA'] if self.get_tipo_seq("",sequencia) == "DNA" else ['UAA','UAG','UGA'] #códons de stop para geração da da proteing
+        cds = [] #armazena os segmentos codificantes
+        #pos_cds = [] #armazena uma lista de tuplas com posição inicial e final das sequencias codificantes
+        pos_i = 0 #determina a posicao inicial do segmento
+        finais = [0,0,0] #encontra três possibilidades de encerramento da sequência codificante
+        for cd in range(sequencia.count(codon_start)-1):
+            pos_i = sequencia.find(codon_start,pos_i) #recebe a primeira posição de uma sequencia codificante
+            pos_f = pos_i + 3 #busca o códon de stop a partir do códon de start
+            finais = [sequencia.find(stop[0],pos_f),sequencia.find(stop[1],pos_f),sequencia.find(stop[2],pos_f)] #encontra até 3 possíveis condições de stop
+            pos_f = min([n for n in finais if n>=0])+3 if(len([n for n in finais if n>=0]) > 0) else -1 #Seleciona a posição mais próxima
+            if pos_f < 0: break #se não encontrar mais posicao de stop, interrompe a busca
+            cds.append(sequencia[pos_i:pos_f]) #armazena a sequencia codificante
+            #pos_cds.append((pos_i,pos_f)) #armazena tuplas de início e fim das sequencias codificantes no genoma
+            pos_i = pos_f #reinicia a busca da posição final da última sequenciapass
+        return cds    
+    def __traduz_janelas_codificantes(self,exons): #exons é uma lista de string cds
+        proteina = []
+        for e in exons: #primeira janela
+            proteina.append(self.dna("",e).transcreve().traduz().get())
+        for e in exons: #segunda janela   
+            proteina.append(self.dna("",e[1:]).transcreve().traduz().get())
+        for e in exons: #terceira janela       
+            proteina.append(self.dna("",e[2:]).transcreve().traduz().get())
+        return proteina    
+
+
+    def busca_cds(self,arg,codon_start):
+        """Busca na squẽncias os segmentos codificantes no genoma que inicia pelo codon_start, se a fita é um DNA, encontra também no reverso complementar
+           traduz todos o exons em proteina
+        """
+        if(self.seq_existe(arg)):
+            #indice = arg if isinstance(arg, int) else self.ids.index(arg) 
+            proteina = []
+            if(self.get_tipo_seq(arg) != "Proteina"):
+                exons = self.__encontra_codificante_sequencia(self.get_sequencia(arg),codon_start) #busca os exons em uma fita
+                #Traduz usando a Sequência Original (5' -> 3'): 3 janelas de codificação
+                proteina = self.__traduz_janelas_codificantes(exons) 
+                if(self.get_tipo_seq(arg)=="DNA"): #obtêm as proteinas do reverso complementar da fita 
+                    proteina.extend(self.__traduz_janelas_codificantes(self.__encontra_codificante_sequencia(self.reverso_complementar(arg),codon_start)))
+                return proteina
+            else: self.message_view("A sequência informada é uma Proteína!")             
+        else: self.message_view("Identificação das sequências não encontrada!")       
+        return []
+    
+    #***************************************************************
+    # Modelamento de métodos em cascada ( chanining)
+    #***************************************************************
+    def dna(self,arg,sequencia = None):
+        if self.seq_existe(arg) or sequencia != None: #prossegue para uma sequencia válida
+            self.retorno_chaining = self.get_sequencia(arg) if(sequencia == None) else sequencia
         else: self.message_view("Sequencia não encontrada!",True)   
         return self
 
     def rm_introns(self,*args):
         for arg in args:
             if isinstance(arg, str):
-                self.retorno = re.sub(arg, "", self.retorno)
+                self.retorno_chaining = re.sub(arg, "", self.retorno_chaining)
         return self
     
     def transcreve(self):
-        self.adiciona_seq("Transcricao00x2","Sequencia armazenada de forma temporária para calculo de transcrição",self.retorno)
-        self.retorno = self.transc_dna2rna("Transcricao00x2")
-        self.remove_seq("Transcricao00x2")
+        if(len(self.retorno_chaining)>0): #processa se somente de existir uma sequencia
+            self.adiciona_seq("Transcricao00x2","Sequencia armazenada de forma temporária para calculo de transcrição",self.retorno_chaining)
+            self.retorno_chaining = self.transc_dna2rna("Transcricao00x2")
+            self.remove_seq("Transcricao00x2")
         return self
     
     def traduz(self):
-        self.adiciona_seq("Traducao00x1","Sequencia armazenada de forma temporária para calculo de transcrição",self.retorno)
-        self.retorno = self.rna2proteina("Traducao00x1")
-        self.remove_seq("Traducao00x1")
+        if(len(self.retorno_chaining)>0): #processa se somente de existir uma sequencia
+            self.adiciona_seq("Traducao00x1","Sequencia armazenada de forma temporária para calculo de transcrição",self.retorno_chaining)
+            self.retorno_chaining = self.rna2proteina("Traducao00x1")
+            self.remove_seq("Traducao00x1")
         return self
 
     def imprime(self):
-        print(self.retorno)
+        print(self.retorno_chaining)
         return self
 
     def get(self):
-        return self.retorno
+        return self.retorno_chaining
